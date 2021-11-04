@@ -72,17 +72,5 @@ router.post('/shorten', (req, res) => {
     }
   });
 });
-router.post('/', function (req, res, next) {
-  link = req.body.link;
-  short = req.body.short;
-});
-
-router.put('/', function (req, res, next) {
-  res.json({ message: 'API v1' });
-});
-
-router.delete('/', function (req, res, next) {
-  res.json({ message: 'API v1' });
-});
 
 module.exports = router;

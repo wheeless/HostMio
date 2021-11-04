@@ -41,24 +41,37 @@ router.post('/shorten', (req, res) => {
       text: 'Please add a short URL',
     });
   }
-
-  if (errors.length > 0) {
-    res.json({
-      errors: errors,
-      longUrl: req.body.longUrl,
-      shortUrl: req.body.shortUrl,
-    });
-  } else {
-    const newUrl = {
-      longUrl: req.body.longUrl,
-      shortUrl: req.body.shortUrl,
-    };
-    new Url(newUrl).save().then((url) => {
-      res.status(200).json(url);
-    });
-  }
+  Url.findOne({
+    $or: [
+      {
+        longUrl: req.body.longUrl,
+      },
+      {
+        shortUrl: req.body.shortUrl,
+      },
+    ],
+  }).then((url) => {
+    if (url) {
+      res.json('LongURL/ShortURL already exists');
+    } else {
+      if (errors.length > 0) {
+        res.json({
+          errors: errors,
+          longUrl: req.body.longUrl,
+          shortUrl: req.body.shortUrl,
+        });
+      } else {
+        const newUrl = {
+          longUrl: req.body.longUrl,
+          shortUrl: req.body.shortUrl,
+        };
+        new Url(newUrl).save().then((url) => {
+          res.status(200).json(url);
+        });
+      }
+    }
+  });
 });
-
 router.post('/', function (req, res, next) {
   link = req.body.link;
   short = req.body.short;

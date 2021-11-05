@@ -1,11 +1,13 @@
 var express = require('express');
 var router = express.Router();
+var cors = require('cors');
 const validUrl = require('valid-url');
 const shortid = require('shortid');
 const config = require('config');
 const Url = require('../models/Url');
 
 router.get('/links', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
   Url.find()
     .then((url) => {
       res.json(url);
@@ -15,7 +17,7 @@ router.get('/links', (req, res) => {
     });
 });
 
-router.post('/shorten', (req, res) => {
+router.post('/links', (req, res) => {
   let errors = [];
 
   const baseUrl = config.get('baseUrl');

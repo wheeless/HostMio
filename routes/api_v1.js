@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const validUrl = require('valid-url');
-// const shortid = require('shortid');
+const shortid = require('shortid');
 const config = require('config');
 const Url = require('../models/Url');
 
@@ -19,11 +19,11 @@ router.post('/shorten', (req, res) => {
       text: 'Please add a long URL',
     });
   }
-  if (!req.body.shortUrl) {
-    errors.push({
-      text: 'Please add a short URL',
-    });
-  }
+  // if (!req.body.shortUrl) {
+  //   errors.push({
+  //     text: 'Please add a short URL',
+  //   });
+  // }
   Url.findOne({
     $or: [
       {
@@ -43,10 +43,21 @@ router.post('/shorten', (req, res) => {
           longUrl: req.body.longUrl,
           shortUrl: req.body.shortUrl,
         });
+      } else if (!req.body.shortUrl) {
+        const urlCode = shortid.generate();
+        const newUrl = {
+          longUrl: req.body.longUrl,
+          shortUrl: urlCode,
+          date: new Date(),
+        };
+        new Url(newUrl).save().then((url) => {
+          res.status(200).json(url);
+        });
       } else {
         const newUrl = {
           longUrl: req.body.longUrl,
           shortUrl: req.body.shortUrl,
+          date: new Date(),
         };
         new Url(newUrl).save().then((url) => {
           res.status(200).json(url);

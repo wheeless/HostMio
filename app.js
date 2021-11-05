@@ -19,5 +19,5 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/v1', apiv1);
 app.use('/', shorten);
-
+console.log('Launch Successful');
 module.exports = app;

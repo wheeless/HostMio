@@ -29,11 +29,7 @@ router.post('/shorten', (req, res) => {
       text: 'Please add a long URL',
     });
   }
-  // if (!req.body.shortUrl) {
-  //   errors.push({
-  //     text: 'Please add a short URL',
-  //   });
-  // }
+
   Url.findOne({
     $or: [
       {
@@ -77,7 +73,7 @@ router.post('/shorten', (req, res) => {
   });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/links/:id', (req, res) => {
   Url.findByIdAndRemove(req.params.id)
     .then((url) => {
       res.json(url + ' deleted');

@@ -5,6 +5,16 @@ const shortid = require('shortid');
 const config = require('config');
 const Url = require('../models/Url');
 
+router.get('/links', (req, res) => {
+  Url.find()
+    .then((url) => {
+      res.json(url);
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.message });
+    });
+});
+
 router.post('/shorten', (req, res) => {
   let errors = [];
 
@@ -65,6 +75,16 @@ router.post('/shorten', (req, res) => {
       }
     }
   });
+});
+
+router.delete('/:id', (req, res) => {
+  Url.findByIdAndRemove(req.params.id)
+    .then((url) => {
+      res.json(url + ' deleted');
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.message });
+    });
 });
 
 module.exports = router;

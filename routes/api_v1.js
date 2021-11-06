@@ -17,6 +17,17 @@ router.get('/links', (req, res) => {
     });
 });
 
+router.get('/links/:id', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  Url.findById(req.params.id)
+    .then((url) => {
+      res.json(url);
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.message });
+    });
+});
+
 router.post('/links', (req, res) => {
   let errors = [];
 
@@ -31,7 +42,11 @@ router.post('/links', (req, res) => {
       text: 'Please add a long URL',
     });
   }
-
+  if (!validUrl.isUri(req.body.longUrl)) {
+    errors.push({
+      text: 'Invalid url',
+    });
+  }
   Url.findOne({
     $or: [
       {
@@ -73,6 +88,21 @@ router.post('/links', (req, res) => {
       }
     }
   });
+});
+
+router.put('/links/:id', (req, res) => {
+  Url.findById(req.params.id)
+    .then((url) => {
+      url.longUrl = req.body.longUrl;
+      url.shortUrl = req.body.shortUrl;
+      url.date = new Date();
+      url.save().then((url) => {
+        res.json(url);
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.message });
+    });
 });
 
 router.delete('/links/:id', (req, res) => {

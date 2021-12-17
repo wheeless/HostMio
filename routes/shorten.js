@@ -2,8 +2,7 @@ var express = require('express');
 var router = express.Router();
 const Url = require('../models/Url');
 
-router.get('/:shortUrl', async (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
+router.get('/:shortUrl', cors(), async (req, res) => {
   try {
     const url = await Url.findOne({ shortUrl: req.params.shortUrl });
 

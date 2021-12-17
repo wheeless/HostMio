@@ -5,6 +5,7 @@ const validUrl = require('valid-url');
 const shortid = require('shortid');
 const config = require('config');
 const Url = require('../models/Url');
+var cors = require('cors');
 
 router.get('/links', (req, res) => {
   Url.find()

@@ -13,8 +13,6 @@ var whitelist = [
   'https://hostm.io',
   'https://api.hostmonkey.io',
   'https://hostm.io/urls',
-  'http://localhost:4200',
-  'http://127.0.0.1:8080',
 ];
 var corsOptions = {
   origin: function (origin, callback) {
@@ -26,7 +24,7 @@ var corsOptions = {
   },
 };
 
-app.use(cors(corsOptions));
+app.use(cors(process.env.CORS));
 
 // Connect to database
 connectDB();

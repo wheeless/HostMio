@@ -11,7 +11,7 @@ var app = express();
 var whitelist = [
   'https://wheeless.dev',
   'https://hostm.io',
-  'https://api.hostmonkey.io/',
+  'https://api.hostmonkey.io',
   'https://hostm.io/urls',
   'http://localhost:4200',
   'http://127.0.0.1:8080',

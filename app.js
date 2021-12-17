@@ -24,7 +24,7 @@ var corsOptions = {
   },
 };
 
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Connect to database
 connectDB();

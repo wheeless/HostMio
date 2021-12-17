@@ -7,7 +7,6 @@ const config = require('config');
 const Url = require('../models/Url');
 
 router.get('/links', (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
   Url.find()
     .then((url) => {
       res.json(url);
@@ -18,7 +17,6 @@ router.get('/links', (req, res) => {
 });
 
 router.get('/links/:id', (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
   Url.findById(req.params.id)
     .then((url) => {
       res.json(url);

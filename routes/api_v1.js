@@ -19,7 +19,7 @@ router.get('/links', (req, res) => {
     req.headers['x-forwarded-for']?.split(',').shift() ||
     req.socket?.remoteAddress;
 
-  console.log(parseIp(req));
+  console.log('Pinged: GET /api/v1/links from IP: ' + parseIp(req));
 });
 
 router.get('/links/:id', (req, res) => {
@@ -30,12 +30,25 @@ router.get('/links/:id', (req, res) => {
     .catch((err) => {
       res.status(500).json({ message: err.message });
     });
+  const parseIp = (req) =>
+    req.headers['x-forwarded-for']?.split(',').shift() ||
+    req.socket?.remoteAddress;
+
+  console.log(
+    'Pinged: GET /api/v1/links/' + req.params.id + ' from IP: ' + parseIp(req)
+  );
 });
 
 router.post('/links', (req, res) => {
   let errors = [];
 
   const baseUrl = config.get('baseUrl');
+
+  const parseIp = (req) =>
+    req.headers['x-forwarded-for']?.split(',').shift() ||
+    req.socket?.remoteAddress;
+
+  console.log('Pinged: POST /api/v1/links/ from IP: ' + parseIp(req));
 
   // Check base url
   if (!validUrl.isUri(baseUrl)) {

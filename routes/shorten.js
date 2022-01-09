@@ -16,6 +16,11 @@ router.get('/:shortUrl', cors('*'), async (req, res) => {
     console.error(err);
     res.status(500).json('Server error');
   }
+  const parseIp = (req) =>
+    req.headers['x-forwarded-for']?.split(',').shift() ||
+    req.socket?.remoteAddress;
+
+  console.log('Pinged: GET /:shorten from IP: ' + parseIp(req));
 });
 
 module.exports = router;

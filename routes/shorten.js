@@ -10,7 +10,10 @@ router.get('/:shortUrl', cors('*'), async (req, res) => {
       req.headers['x-forwarded-for']?.split(',').shift() ||
       req.socket?.remoteAddress;
 
-    console.log('Pinged: GET /:shorten from IP: ' + parseIp(req));
+    console.log(
+      'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
+    );
+    console.log('Redirecting to: ' + url.longUrl);
     if (url) {
       return res.redirect(url.longUrl);
     } else {

@@ -15,6 +15,11 @@ router.get('/links', (req, res) => {
     .catch((err) => {
       res.status(500).json({ message: err.message });
     });
+  const parseIp = (req) =>
+    req.headers['x-forwarded-for']?.split(',').shift() ||
+    req.socket?.remoteAddress;
+
+  console.log(parseIp(req));
 });
 
 router.get('/links/:id', (req, res) => {

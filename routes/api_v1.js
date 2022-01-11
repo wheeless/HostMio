@@ -7,6 +7,28 @@ const config = require('config');
 const Url = require('../models/Url');
 var cors = require('cors');
 
+router.get('/links/:shortUrl', cors('*'), async (req, res) => {
+  try {
+    const url = await Url.findOne({ shortUrl: req.params.shortUrl });
+    const parseIp = (req) =>
+      req.headers['x-forwarded-for']?.split(',').shift() ||
+      req.socket?.remoteAddress;
+
+    console.log(
+      'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
+    );
+    console.log('Redirecting to: ' + url.longUrl);
+    if (url) {
+      return res.redirect(url.longUrl);
+    } else {
+      return res.status(404).json('No url found');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('Server error');
+  }
+});
+
 router.get('/links', (req, res) => {
   Url.find()
     .then((url) => {
@@ -22,22 +44,22 @@ router.get('/links', (req, res) => {
   console.log('Pinged: GET /api/v1/links from IP: ' + parseIp(req));
 });
 
-router.get('/links/:id', (req, res) => {
-  Url.findById(req.params.id)
-    .then((url) => {
-      res.json(url);
-    })
-    .catch((err) => {
-      res.status(500).json({ message: err.message });
-    });
-  const parseIp = (req) =>
-    req.headers['x-forwarded-for']?.split(',').shift() ||
-    req.socket?.remoteAddress;
+// router.get('/links/:id', (req, res) => {
+//   Url.findById(req.params.id)
+//     .then((url) => {
+//       res.json(url);
+//     })
+//     .catch((err) => {
+//       res.status(500).json({ message: err.message });
+//     });
+//   const parseIp = (req) =>
+//     req.headers['x-forwarded-for']?.split(',').shift() ||
+//     req.socket?.remoteAddress;
 
-  console.log(
-    'Pinged: GET /api/v1/links/' + req.params.id + ' from IP: ' + parseIp(req)
-  );
-});
+//   console.log(
+//     'Pinged: GET /api/v1/links/' + req.params.id + ' from IP: ' + parseIp(req)
+//   );
+// });
 
 router.post('/links', (req, res) => {
   let errors = [];

@@ -7,6 +7,15 @@ var shorten = require('./routes/shorten');
 var apiv1 = require('./routes/api_v1');
 var cors = require('cors');
 var app = express();
+const { useTreblle } = require('treblle');
+
+app.use(express.json());
+
+// ATTACH TREBLLE WITH YOUR API KEY AND PROJECT ID
+useTreblle(app, {
+  apiKey: 'E37DxNWaZQuosZcQWxTGOqyrB20TTADt',
+  projectId: '9rZZ8eKPFOmjUm7u',
+});
 
 var whitelist = [
   'https://wheeless.dev',

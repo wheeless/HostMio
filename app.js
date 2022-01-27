@@ -8,6 +8,8 @@ var app = express();
 require('dotenv').config();
 const { useTreblle } = require('treblle');
 
+const env = process.env.NODE_ENV || 'development';
+
 // Controllers
 const linksController = require('./controllers/links_v1');
 
@@ -20,14 +22,14 @@ useTreblle(app, {
 });
 
 // Customize your cors options here
-const allowedOrigins = process.env.ALLOWED_ORIGINS || '*';
+const allowedOrigins = process.env.ALLOWED_ORIGINS;
 const allowedOriginsArray = allowedOrigins
   .split(',')
   .map((item) => item.trim());
 console.log(allowedOriginsArray);
 var corsOptions = {
   origin: function (origin, callback) {
-    if (allowedOriginsArray.indexOf(origin)) {
+    if (allowedOriginsArray.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error('Where TF is your access token?'));
@@ -35,7 +37,14 @@ var corsOptions = {
   },
 };
 
-app.use(cors(corsOptions));
+if (env === 'development') {
+  app.use(cors());
+} else if (env === 'production') {
+  app.use(cors(corsOptions));
+} else {
+  console.log('Error: NODE_ENV not set to development or production');
+  process.exit(1);
+}
 // End of cors customization section
 
 // Connect to database

@@ -8,7 +8,7 @@ var app = express();
 require('dotenv').config();
 const { useTreblle } = require('treblle');
 
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV;
 
 // Controllers
 const linksController = require('./controllers/links_v1');
@@ -22,6 +22,8 @@ useTreblle(app, {
 });
 
 // Customize your cors options here
+
+// Edit your ALLOWED_ORIGINS in the .env file
 const allowedOrigins = process.env.ALLOWED_ORIGINS;
 const allowedOriginsArray = allowedOrigins
   .split(',')

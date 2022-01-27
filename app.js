@@ -3,8 +3,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const connectDB = require('./config/db');
-var shorten = require('./routes/shorten');
-var apiv1 = require('./routes/api_v1');
 var cors = require('cors');
 var app = express();
 require('dotenv').config();
@@ -17,8 +15,8 @@ app.use(express.json());
 
 // ATTACH TREBLLE WITH YOUR API KEY AND PROJECT ID
 useTreblle(app, {
-  apiKey: process.env.apiKey,
-  projectId: process.env.projectId,
+  apiKey: process.env.TREBLLE_apiKey,
+  projectId: process.env.TREBLLE_projectId,
 });
 
 // Customize your cors options here
@@ -51,13 +49,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Controller Routes
 app.get('/api/v1/links/:shortUrl', linksController.getLink);
 app.get('/api/v1/links', linksController.getLinks);
 app.post('/api/v1/links', linksController.createLink);
 app.delete('/api/v1/links/:id', linksController.deleteLink);
 app.put('/api/v1/links/:id', linksController.updateLink);
 
-//app.use('/api/v1', apiv1);
-//app.use('/', shorten);
 console.log('Launch Successful');
 module.exports = app;

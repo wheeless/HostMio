@@ -10,7 +10,8 @@ var app = express();
 require('dotenv').config();
 const { useTreblle } = require('treblle');
 
-const linksController = require('./controllers/links');
+// controllers
+const linksController = require('./controllers/links_v1');
 
 app.use(express.json());
 

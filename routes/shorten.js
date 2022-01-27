@@ -13,7 +13,7 @@ router.get('/:shortUrl', cors('*'), async (req, res) => {
     console.log(
       'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
     );
-    console.log('Redirecting to: ' + url.longUrl);
+    // console.log('Redirecting to: ' + url.longUrl);
     if (url) {
       return res.redirect(url.longUrl);
     } else {

@@ -7,22 +7,27 @@ var shorten = require('./routes/shorten');
 var apiv1 = require('./routes/api_v1');
 var cors = require('cors');
 var app = express();
+require('dotenv').config();
 const { useTreblle } = require('treblle');
+
+const linksController = require('./controllers/links');
 
 app.use(express.json());
 
 // ATTACH TREBLLE WITH YOUR API KEY AND PROJECT ID
 useTreblle(app, {
-  apiKey: 'E37DxNWaZQuosZcQWxTGOqyrB20TTADt',
-  projectId: '9rZZ8eKPFOmjUm7u',
+  apiKey: process.env.apiKey,
+  projectId: process.env.projectId,
 });
 
+// Customize your cors options here
 var whitelist = [
   'https://wheeless.dev',
   'https://hostm.io',
   'https://api.hostmonkey.io',
   'https://hostm.io/urls',
 ];
+
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
@@ -34,6 +39,7 @@ var corsOptions = {
 };
 
 app.use(cors());
+// End of cors customization section
 
 // Connect to database
 connectDB();
@@ -44,7 +50,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api/v1', apiv1);
-app.use('/', shorten);
+app.get('/api/v1/links/:shortUrl', linksController.getLink);
+app.get('/api/v1/links', linksController.getLinks);
+app.post('/api/v1/links', linksController.createLink);
+app.delete('/api/v1/links/:id', linksController.deleteLink);
+app.put('/api/v1/links/:id', linksController.updateLink);
+
+//app.use('/api/v1', apiv1);
+//app.use('/', shorten);
 console.log('Launch Successful');
 module.exports = app;

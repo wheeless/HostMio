@@ -20,24 +20,17 @@ useTreblle(app, {
 });
 
 // Customize your cors options here
-var whitelist = [
-  'https://wheeless.dev',
-  'https://hostm.io',
-  'https://api.hostmonkey.io',
-  'https://hostm.io/urls',
-  'localhost:46001',
-];
-const allowedOrigins = process.env.ALLOWED_ORIGINS || '';
+const allowedOrigins = process.env.ALLOWED_ORIGINS || '*';
 const allowedOriginsArray = allowedOrigins
   .split(',')
   .map((item) => item.trim());
 console.log(allowedOriginsArray);
 var corsOptions = {
   origin: function (origin, callback) {
-    if (allowedOriginsArray.indexOf(origin) !== -1) {
+    if (allowedOriginsArray.indexOf(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Where TF is your api access token?'));
+      callback(new Error('Where TF is your access token?'));
     }
   },
 };

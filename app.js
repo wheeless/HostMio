@@ -59,7 +59,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Controller Routes
-app.get('/api/v1/links/:shortUrl', linksController.getLink);
+app.get('/api/v1/links/:shortUrl', cors('*'), linksController.getLink);
 app.get('/api/v1/links', linksController.getLinks);
 app.post('/api/v1/links', linksController.createLink);
 app.delete('/api/v1/links/:id', linksController.deleteLink);

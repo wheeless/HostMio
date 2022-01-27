@@ -1,6 +1,4 @@
 var express = require('express');
-var router = express.Router();
-var cors = require('cors');
 const validUrl = require('valid-url');
 const shortid = require('shortid');
 const config = require('config');

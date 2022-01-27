@@ -15,8 +15,8 @@ app.use(express.json());
 
 // ATTACH TREBLLE WITH YOUR API KEY AND PROJECT ID
 useTreblle(app, {
-  apiKey: process.env.TREBLLE_apiKey,
-  projectId: process.env.TREBLLE_projectId,
+  apiKey: process.env.TREBLLE_APIKEY,
+  projectId: process.env.TREBLLE_PROJECTID,
 });
 
 // Customize your cors options here

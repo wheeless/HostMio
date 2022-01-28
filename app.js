@@ -5,12 +5,8 @@ var logger = require('morgan');
 const connectDB = require('./config/db');
 var cors = require('cors');
 var app = express();
-require('dotenv').config();
+require('dotenv').config({ path: '.env' });
 const { useTreblle } = require('treblle');
-/**
- * Load environment variables from .env file, where API keys and passwords are configured.
- */
-dotenv.config({ path: '.env' });
 const env = process.env.NODE_ENV || 'development';
 
 /**

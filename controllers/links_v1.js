@@ -43,23 +43,6 @@ exports.getLinks = (req, res) => {
   console.log('Pinged: GET /api/v1/links from IP: ' + parseIp(req));
 };
 
-// router.get('/links/:id', (req, res) => {
-//   Url.findById(req.params.id)
-//     .then((url) => {
-//       res.json(url);
-//     })
-//     .catch((err) => {
-//       res.status(500).json({ message: err.message });
-//     });
-//   const parseIp = (req) =>
-//     req.headers['x-forwarded-for']?.split(',').shift() ||
-//     req.socket?.remoteAddress;
-
-//   console.log(
-//     'Pinged: GET /api/v1/links/' + req.params.id + ' from IP: ' + parseIp(req)
-//   );
-// });
-
 exports.createLink = (req, res) => {
   let errors = [];
 

@@ -16,10 +16,17 @@ const linksController = require('./controllers/links_v1');
 app.use(express.json());
 
 // ATTACH TREBLLE WITH YOUR API KEY AND PROJECT ID
-useTreblle(app, {
-  apiKey: process.env.TREBLLE_APIKEY,
-  projectId: process.env.TREBLLE_PROJECTID,
-});
+if (process.env.TREBLLE_APIKEY && process.env.TREBLLE_PROJECTID) {
+  useTreblle(app, {
+    apiKey: process.env.TREBLLE_APIKEY,
+    projectId: process.env.TREBLLE_PROJECTID,
+  });
+} else {
+  console.log(
+    'No Treblle API Key found, remember to make sure you have a .env file with TREBLLE_APIKEY and TREBLLE_PROJECTID'
+  );
+  console.log('You can get an API key from https://treblle.com/');
+}
 
 // Prevent CORS errors
 app.get('/api/v1/links/:shortUrl', cors(), linksController.getLink);

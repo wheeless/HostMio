@@ -7,10 +7,15 @@ var cors = require('cors');
 var app = express();
 require('dotenv').config();
 const { useTreblle } = require('treblle');
+/**
+ * Load environment variables from .env file, where API keys and passwords are configured.
+ */
+dotenv.config({ path: '.env' });
+const env = process.env.NODE_ENV || 'development';
 
-const env = process.env.NODE_ENV;
-
-// Controllers
+/**
+ * Controllers (route handlers).
+ */
 const linksController = require('./controllers/links_v1');
 
 app.use(express.json());
@@ -31,26 +36,25 @@ if (process.env.TREBLLE_APIKEY && process.env.TREBLLE_PROJECTID) {
 // Prevent CORS errors
 app.get('/api/v1/links/:shortUrl', cors(), linksController.getLink);
 
-// Customize your cors options here
-// Edit your ALLOWED_ORIGINS in the .env file
-const allowedOrigins = process.env.ALLOWED_ORIGINS;
-const allowedOriginsArray = allowedOrigins
-  .split(',')
-  .map((item) => item.trim());
-console.log(allowedOriginsArray);
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (allowedOriginsArray.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Where TF is your access token?'));
-    }
-  },
-};
-
 if (env === 'development') {
   app.use(cors());
 } else if (env === 'production') {
+  // Customize your cors options here
+  // Edit your ALLOWED_ORIGINS in the .env file
+  const allowedOrigins = process.env.ALLOWED_ORIGINS;
+  const allowedOriginsArray = allowedOrigins
+    .split(',')
+    .map((item) => item.trim());
+  console.log(allowedOriginsArray);
+  var corsOptions = {
+    origin: function (origin, callback) {
+      if (allowedOriginsArray.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Where TF is your access token?'));
+      }
+    },
+  };
   app.use(cors(corsOptions));
 } else {
   console.log('Error: NODE_ENV not set to development or production');

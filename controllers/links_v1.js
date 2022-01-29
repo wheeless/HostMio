@@ -1,9 +1,6 @@
-var express = require('express');
 const validUrl = require('valid-url');
 const shortid = require('shortid');
-const config = require('config');
 const Url = require('../models/Url');
-var cors = require('cors');
 
 exports.getLink = async (req, res) => {
   try {
@@ -45,8 +42,6 @@ exports.getLinks = (req, res) => {
 
 exports.createLink = (req, res) => {
   let errors = [];
-
-  const baseUrl = config.get('baseUrl');
 
   const parseIp = (req) =>
     req.headers['x-forwarded-for']?.split(',').shift() ||

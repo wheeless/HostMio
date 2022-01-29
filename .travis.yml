@@ -8,6 +8,8 @@ cache:
     - 'node_modules'
 install:
   - npm install
+script:
+  - test
 deploy:
   - provider: script
     skip_cleanup: true

@@ -10,7 +10,6 @@ install:
   - npm install
 deploy:
   - provider: script
-    skip_cleanup: true
     script: chmod +x ./deploy.sh && ./deploy.sh
     on:
-      branch: master
+      branch: main

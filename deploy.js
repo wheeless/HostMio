@@ -73,14 +73,9 @@ function updateRemoteApp() {
 }
 
 function installNodeModules() {
-  return ssh
-    .execCommand(`npm install`, {
-      cwd: '/home/ubuntu/HostMio',
-    })
-    .then(function (result) {
-      console.log('STDOUT: ' + result.stdout);
-      console.log('STDERR: ' + result.stderr);
-    });
+  return ssh.execCommand(`npm install`, {
+    cwd: '/home/ubuntu/HostMio',
+  });
 }
 
 // restart mongodb and node services on the remote server

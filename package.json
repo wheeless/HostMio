@@ -15,6 +15,8 @@
     "generate-api-key": "^1.0.0",
     "mongoose": "^6.0.12",
     "morgan": "~1.9.1",
+    "node-cmd": "^5.0.0",
+    "node-ssh": "^12.0.3",
     "shortid": "^2.2.16",
     "treblle": "^1.0.2",
     "valid-url": "^1.0.9"

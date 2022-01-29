@@ -1,7 +1,6 @@
 # .travis.yml file
 language: node_js
 node_js:
-  - '14'
   - '16'
 services: mongodb
 cache:

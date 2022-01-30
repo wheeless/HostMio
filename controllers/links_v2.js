@@ -1,10 +1,10 @@
-const validUrl = require('valid-url');
+const validTEMP = require('valid-url');
 const shortid = require('shortid');
-const Url = require('../models/Url');
+const UrlV2 = require('../models/UrlV2');
 
 exports.getLink = async (req, res) => {
   try {
-    const url = await Url.findOne({ shortUrl: req.params.shortUrl });
+    const url = await UrlV2.findOne({ shortUrl: req.params.shortUrl });
     const parseIp = (req) =>
       req.headers['x-forwarded-for']?.split(',').shift() ||
       req.socket?.remoteAddress;
@@ -26,7 +26,7 @@ exports.getLink = async (req, res) => {
 };
 
 exports.getLinks = (req, res) => {
-  Url.find()
+  UrlV2.find()
     .then((url) => {
       res.json(url);
     })
@@ -49,6 +49,10 @@ exports.createLink = (req, res) => {
 
   console.log('Pinged: POST /api/v1/links/ from IP: ' + parseIp(req));
 
+  // Check base url
+  if (!validTEMP.isUri(baseUrl)) {
+    return res.status(401).json('Invalid base url');
+  }
   // Check if long url exists
   if (!req.body.longUrl) {
     errors.push({
@@ -56,13 +60,13 @@ exports.createLink = (req, res) => {
     });
   }
   // Check long url is valid
-  if (!validUrl.isUri(req.body.longUrl)) {
+  if (!validTEMP.isUri(req.body.longUrl)) {
     errors.push({
       text: 'Invalid url',
     });
   }
   // Check if errors array is empty
-  Url.findOne({
+  UrlV2.findOne({
     $or: [
       {
         shortUrl: req.body.shortUrl,
@@ -89,7 +93,7 @@ exports.createLink = (req, res) => {
           date: new Date(),
         };
         // Save url
-        new Url(newUrl).save().then((url) => {
+        new UrlV2(newUrl).save().then((url) => {
           res.status(200).json(url);
         });
       } else {
@@ -98,7 +102,7 @@ exports.createLink = (req, res) => {
           shortUrl: req.body.shortUrl,
           date: new Date(),
         };
-        new Url(newUrl).save().then((url) => {
+        new UrlV2(newUrl).save().then((url) => {
           res.status(200).json(url);
         });
       }
@@ -107,7 +111,7 @@ exports.createLink = (req, res) => {
 };
 
 exports.updateLink = (req, res) => {
-  Url.findById(req.params.id)
+  UrlV2.findById(req.params.id)
     .then((url) => {
       url.longUrl = req.body.longUrl;
       url.shortUrl = req.body.shortUrl;
@@ -122,7 +126,7 @@ exports.updateLink = (req, res) => {
 };
 
 exports.deleteLink = (req, res) => {
-  Url.findByIdAndRemove(req.params.id)
+  UrlV2.findByIdAndRemove(req.params.id)
     .then((url) => {
       res.json(url + ' deleted');
     })

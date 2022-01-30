@@ -13,6 +13,7 @@ const env = process.env.NODE_ENV || 'development';
  * Controllers (route handlers).
  */
 const linksController = require('./controllers/links_v1');
+const linksV2Controller = require('./controllers/links_v2');
 
 app.use(express.json());
 
@@ -31,6 +32,7 @@ if (process.env.TREBLLE_APIKEY && process.env.TREBLLE_PROJECTID) {
 
 // Prevent CORS errors
 app.get('/api/v1/links/:shortUrl', cors(), linksController.getLink);
+app.get('/api/v2/links/:shortUrl', cors(), linksV2Controller.getLink);
 
 if (env === 'development') {
   app.use(cors());
@@ -67,11 +69,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Controller Routes
+// Controller v1 Routes
 app.get('/api/v1/links', linksController.getLinks);
 app.post('/api/v1/links', linksController.createLink);
 app.delete('/api/v1/links/:id', linksController.deleteLink);
 app.put('/api/v1/links/:id', linksController.updateLink);
+// Controller v2 Routes
+app.get('/api/v2/links', linksV2Controller.getLinks);
+app.post('/api/v2/links', linksV2Controller.createLink);
+app.delete('/api/v2/links/:id', linksV2Controller.deleteLink);
+app.put('/api/v2/links/:id', linksV2Controller.updateLink);
 
 console.log('Launch Successful');
 module.exports = app;

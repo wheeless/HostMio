@@ -82,5 +82,6 @@ If you have any feedback, please reach out to us at kyle@avernix.com
 This project is used by the following companies:
 
 - Avernix Technologies
-- Hostmonkey.io
-
+- Prestige Gaming Community
+- HostMonkey.io
+ 

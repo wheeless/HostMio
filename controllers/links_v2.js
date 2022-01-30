@@ -37,7 +37,7 @@ exports.getLinks = (req, res) => {
     req.headers['x-forwarded-for']?.split(',').shift() ||
     req.socket?.remoteAddress;
 
-  console.log('Pinged: GET /api/v1/links from IP: ' + parseIp(req));
+  console.log('Pinged: GET /api/v2/links from IP: ' + parseIp(req));
 };
 
 exports.createLink = (req, res) => {
@@ -47,12 +47,8 @@ exports.createLink = (req, res) => {
     req.headers['x-forwarded-for']?.split(',').shift() ||
     req.socket?.remoteAddress;
 
-  console.log('Pinged: POST /api/v1/links/ from IP: ' + parseIp(req));
+  console.log('Pinged: POST /api/v2/links/ from IP: ' + parseIp(req));
 
-  // Check base url
-  if (!validTEMP.isUri(baseUrl)) {
-    return res.status(401).json('Invalid base url');
-  }
   // Check if long url exists
   if (!req.body.longUrl) {
     errors.push({

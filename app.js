@@ -31,7 +31,6 @@ if (process.env.TREBLLE_APIKEY && process.env.TREBLLE_PROJECTID) {
 
 // Prevent CORS errors
 app.get('/api/v1/links/:shortUrl', cors(), linksController.getLink);
-app.get('/api/v2/links/:shortUrl', cors(), linksV2Controller.getLink);
 
 if (env === 'development') {
   app.use(cors());

@@ -6,7 +6,7 @@
 
 HostMio is a simple yet robust link shortener api. Meant for open source projects to easily integrate into their own system.
 
-[![Build Status](https://app.travis-ci.com/wheeless/HostMio.svg?branch=main)](https://app.travis-ci.com/wheeless/HostMio)
+[![Node.js CI](https://github.com/wheeless/HostMio/actions/workflows/node.js.yml/badge.svg)](https://github.com/wheeless/HostMio/actions/workflows/node.js.yml)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/wheeless/HostMio)
 ![GitHub](https://img.shields.io/github/license/wheeless/HostMio)
 ![Maintenance](https://img.shields.io/maintenance/yes/2022)

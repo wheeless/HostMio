@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "build": "./deploy.sh",
+    "build": "chmod +x ./deploy.sh && ./deploy.sh",
     "test": "echo 'running tests...'"
   },
   "dependencies": {

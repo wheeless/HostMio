@@ -28,7 +28,7 @@ HostMio is a simple yet robust link shortener api. Meant for open source project
 
 | Parameter | Type     | Description                |
 | :-------- | :------- | :------------------------- |
-| `api_key` | `string` | **Required**. Your API key |
+| `api_key` | `string` | **Required**. Your API key required in V2 |
 
 #### Redirect to longUrl
 
@@ -84,4 +84,10 @@ This project is used by the following companies:
 - Avernix Technologies
 - Prestige Gaming Community
 - HostMonkey.io
- 
+
+
+## Roadmap
+
+- API Key requirements for requests
+- Add in custom domains
+- Package into node module

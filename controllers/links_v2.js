@@ -7,19 +7,26 @@ const parseIp = (req) =>
   req.socket?.remoteAddress;
 
 exports.getLink = async (req, res) => {
-  const apiKey = req.query.APIKey;
-
   try {
-    const url = await UrlV2.findOne({ shortUrl: req.params.shortUrl });
+    const apiKey = req.query.APIKey;
+    if (!apiKey) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const urlCheck = await UrlV2.findOne({
+      $and: [{ shortUrl: req.params.shortUrl }, { APIKey: apiKey }],
+    });
+
+    console.log(urlCheck);
     parseIp(req);
 
     console.log(
       'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
     );
-    console.log('Redirecting to: ' + url.longUrl);
+    console.log('Redirecting to: ' + urlCheck.longUrl);
 
-    if (url) {
-      return res.redirect(url.longUrl);
+    if (urlCheck) {
+      return res.redirect(urlCheck.longUrl);
     } else {
       return res.status(404).json('No url found');
     }

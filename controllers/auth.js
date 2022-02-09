@@ -4,8 +4,9 @@ const generateApiKey = require('generate-api-key');
 exports.signup = async (req, res) => {
   const { username, email, password } = req.body;
   const apiKey = generateApiKey({
-    method: 'string',
-    pool: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+    name: 'myKeyForHostMio',
+    method: 'uuidv4',
+    dashes: false,
   });
   const auth = new Auth({
     username,

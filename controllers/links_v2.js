@@ -17,7 +17,6 @@ exports.getLink = async (req, res) => {
       $and: [{ shortUrl: req.params.shortUrl }, { APIKey: apiKey }],
     });
 
-    console.log(urlCheck);
     parseIp(req);
 
     console.log(
@@ -38,6 +37,9 @@ exports.getLink = async (req, res) => {
 
 exports.getLinks = (req, res) => {
   const apiKey = req.query.APIKey;
+  if (!apiKey) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
   UrlV2.find({ APIKey: apiKey })
     .then((url) => {
       res.json(url);
@@ -69,11 +71,14 @@ exports.createLink = (req, res) => {
       text: 'Invalid url',
     });
   }
-  // Check if errors array is empty
+  // Check if short url exists
   UrlV2.findOne({
-    $or: [
+    $and: [
       {
         shortUrl: req.body.shortUrl,
+      },
+      {
+        APIKey: APIKey,
       },
     ],
   }).then((url) => {

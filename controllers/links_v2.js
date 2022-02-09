@@ -2,12 +2,16 @@ const validTEMP = require('valid-url');
 const shortid = require('shortid');
 const UrlV2 = require('../models/UrlV2');
 
+const parseIp = (req) =>
+  req.headers['x-forwarded-for']?.split(',').shift() ||
+  req.socket?.remoteAddress;
+
 exports.getLink = async (req, res) => {
+  const apiKey = req.query.APIKey;
+
   try {
     const url = await UrlV2.findOne({ shortUrl: req.params.shortUrl });
-    const parseIp = (req) =>
-      req.headers['x-forwarded-for']?.split(',').shift() ||
-      req.socket?.remoteAddress;
+    parseIp(req);
 
     console.log(
       'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
@@ -26,26 +30,23 @@ exports.getLink = async (req, res) => {
 };
 
 exports.getLinks = (req, res) => {
-  UrlV2.find()
+  const apiKey = req.query.APIKey;
+  UrlV2.find({ APIKey: apiKey })
     .then((url) => {
       res.json(url);
     })
     .catch((err) => {
       res.status(500).json({ message: err.message });
     });
-  const parseIp = (req) =>
-    req.headers['x-forwarded-for']?.split(',').shift() ||
-    req.socket?.remoteAddress;
+  parseIp(req);
 
   console.log('Pinged: GET /api/v2/links from IP: ' + parseIp(req));
 };
 
 exports.createLink = (req, res) => {
   let errors = [];
-
-  const parseIp = (req) =>
-    req.headers['x-forwarded-for']?.split(',').shift() ||
-    req.socket?.remoteAddress;
+  let APIKey = req.query.APIKey;
+  parseIp(req);
 
   console.log('Pinged: POST /api/v2/links/ from IP: ' + parseIp(req));
 
@@ -86,7 +87,9 @@ exports.createLink = (req, res) => {
         const newUrl = {
           longUrl: req.body.longUrl,
           shortUrl: urlCode,
-          date: new Date(),
+          expireAt: new Date(),
+          createdAt: new Date(),
+          APIKey: APIKey,
         };
         // Save url
         new UrlV2(newUrl).save().then((url) => {
@@ -96,7 +99,9 @@ exports.createLink = (req, res) => {
         const newUrl = {
           longUrl: req.body.longUrl,
           shortUrl: req.body.shortUrl,
-          date: new Date(),
+          expireAt: new Date(),
+          createdAt: new Date(),
+          APIKey: APIKey,
         };
         new UrlV2(newUrl).save().then((url) => {
           res.status(200).json(url);

@@ -20,6 +20,7 @@
     "node-ssh": "^12.0.3",
     "shortid": "^2.2.16",
     "treblle": "^1.0.2",
-    "valid-url": "^1.0.9"
+    "valid-url": "^1.0.9",
+    "vhost": "^3.0.2"
   }
 }

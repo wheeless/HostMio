@@ -1,16 +1,32 @@
 const validTEMP = require('valid-url');
 const shortid = require('shortid');
 const UrlV2 = require('../models/UrlV2');
+const Auth = require('../models/Auth');
 
 const parseIp = (req) =>
   req.headers['x-forwarded-for']?.split(',').shift() ||
   req.socket?.remoteAddress;
 
+// const apiValid = (req) => {
+//   const apiKey = req.query.APIKey;
+//   const auth = Auth.findOne({ APIKey: apiKey });
+//   if (!auth) {
+//     return res.status(401).json({ message: 'This is not a valid api key!' });
+//   }
+// };
+
 exports.getLink = async (req, res) => {
   try {
-    const apiKey = req.query.APIKey;
+    const apiKey = req.headers['apikey'];
+    console.log(req.headers);
     if (!apiKey) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res
+        .status(401)
+        .json({ message: 'Please supply a valid api key!' });
+    }
+    const checkAPIkey = await Auth.findOne({ APIKey: apiKey });
+    if (!checkAPIkey) {
+      return res.status(401).json({ message: 'Unauthorized!' });
     }
 
     const urlCheck = await UrlV2.findOne({
@@ -36,7 +52,7 @@ exports.getLink = async (req, res) => {
 };
 
 exports.getLinks = (req, res) => {
-  const apiKey = req.query.APIKey;
+  const apiKey = req.headers['apikey'];
   if (!apiKey) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
@@ -54,7 +70,7 @@ exports.getLinks = (req, res) => {
 
 exports.createLink = (req, res) => {
   let errors = [];
-  let APIKey = req.query.APIKey;
+  const apiKey = req.headers['apikey'];
   parseIp(req);
 
   console.log('Pinged: POST /api/v2/links/ from IP: ' + parseIp(req));
@@ -78,7 +94,7 @@ exports.createLink = (req, res) => {
         shortUrl: req.body.shortUrl,
       },
       {
-        APIKey: APIKey,
+        APIKey: apiKey,
       },
     ],
   }).then((url) => {
@@ -101,7 +117,7 @@ exports.createLink = (req, res) => {
           shortUrl: urlCode,
           expireAt: new Date(),
           createdAt: new Date(),
-          APIKey: APIKey,
+          APIKey: apiKey,
         };
         // Save url
         new UrlV2(newUrl).save().then((url) => {
@@ -113,7 +129,7 @@ exports.createLink = (req, res) => {
           shortUrl: req.body.shortUrl,
           expireAt: new Date(),
           createdAt: new Date(),
-          APIKey: APIKey,
+          APIKey: apiKey,
         };
         new UrlV2(newUrl).save().then((url) => {
           res.status(200).json(url);
@@ -124,26 +140,36 @@ exports.createLink = (req, res) => {
 };
 
 exports.updateLink = (req, res) => {
-  UrlV2.findById(req.params.id)
-    .then((url) => {
-      url.longUrl = req.body.longUrl;
-      url.shortUrl = req.body.shortUrl;
-      url.date = new Date();
-      url.save().then((url) => {
-        res.json(url);
+  const apiKey = req.headers['apikey'];
+  if (!apiKey) {
+    UrlV2.findById(req.params.id)
+      .then((url) => {
+        url.longUrl = req.body.longUrl;
+        url.shortUrl = req.body.shortUrl;
+        url.date = new Date();
+        url.save().then((url) => {
+          res.json(url);
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({ message: err.message });
       });
-    })
-    .catch((err) => {
-      res.status(500).json({ message: err.message });
-    });
+  } else {
+    console.log('Not a valid API key');
+  }
 };
 
 exports.deleteLink = (req, res) => {
-  UrlV2.findByIdAndRemove(req.params.id)
-    .then((url) => {
-      res.json(url + ' deleted');
-    })
-    .catch((err) => {
-      res.status(500).json({ message: err.message });
-    });
+  const apiKey = req.headers['apikey'];
+  if (!apiKey) {
+    UrlV2.findByIdAndRemove(req.params.id)
+      .then((url) => {
+        res.json(url + ' deleted');
+      })
+      .catch((err) => {
+        res.status(500).json({ message: err.message });
+      });
+  } else {
+    console.log('Not a valid API key');
+  }
 };

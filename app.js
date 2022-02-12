@@ -8,10 +8,6 @@ var app = express();
 require('dotenv').config({ path: '.env' });
 const { useTreblle } = require('treblle');
 const env = process.env.NODE_ENV || 'development';
-var vhost = require('vhost');
-var testSub = require('./testapp').app;
-
-app.use(vhost('test.localhost', testSub));
 
 /**
  * Controllers (route handlers).

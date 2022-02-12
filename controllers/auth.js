@@ -25,8 +25,9 @@ exports.signup = async (req, res) => {
 exports.regenerateApiKey = async (req, res) => {
   const { username } = req.body;
   const apiKey = generateApiKey({
-    method: 'string',
-    pool: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+    name: 'myKeyForHostMio',
+    method: 'uuidv4',
+    dashes: false,
   });
   try {
     const auth = await Auth.findOneAndUpdate({ username }, { APIKey: apiKey });

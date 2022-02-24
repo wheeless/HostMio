@@ -23,7 +23,7 @@ exports.getLink = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json('Server error');
+    res.status(500).json('This short url either does not exist or has expired');
   }
 };
 

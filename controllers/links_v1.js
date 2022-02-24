@@ -17,7 +17,9 @@ exports.getLink = async (req, res) => {
     if (url) {
       return res.redirect(url.longUrl);
     } else {
-      return res.status(404).json('No url found');
+      return res
+        .status(404)
+        .json('This short url either does not exist or has expired');
     }
   } catch (err) {
     console.error(err);

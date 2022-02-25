@@ -9,12 +9,22 @@ exports.getLink = async (req, res) => {
       req.headers['x-forwarded-for']?.split(',').shift() ||
       req.socket?.remoteAddress;
 
-    console.log(
-      'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
-    );
-    console.log('Redirecting to: ' + url.longUrl);
+    if (url !== null) {
+      console.log('Redirecting to: ' + url.longUrl);
+      console.log(
+        'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
+      );
+    } else {
+      console.log(
+        'Pinged: GET /' +
+          req.params.shortUrl +
+          ' from IP: ' +
+          parseIp(req) +
+          ' but no short url found'
+      );
+    }
 
-    if (url) {
+    if (url !== null) {
       return res.redirect(url.longUrl);
     } else {
       return res.status(404).json('No url found');

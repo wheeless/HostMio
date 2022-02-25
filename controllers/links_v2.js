@@ -35,12 +35,22 @@ exports.getLink = async (req, res) => {
 
     parseIp(req);
 
-    console.log(
-      'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
-    );
-    console.log('Redirecting to: ' + urlCheck.longUrl);
+    if (url !== null) {
+      console.log('Redirecting to: ' + url.longUrl);
+      console.log(
+        'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
+      );
+    } else {
+      console.log(
+        'Pinged: GET /' +
+          req.params.shortUrl +
+          ' from IP: ' +
+          parseIp(req) +
+          ' but no short url found'
+      );
+    }
 
-    if (urlCheck) {
+    if (urlCheck !== null) {
       return res.redirect(urlCheck.longUrl);
     } else {
       return res

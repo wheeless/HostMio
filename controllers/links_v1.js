@@ -39,6 +39,9 @@ exports.getLink = async (req, res) => {
 
 exports.getLinks = (req, res) => {
   Url.find()
+    .sort({
+      date: 'desc',
+    })
     .then((url) => {
       res.json(url);
     })

@@ -151,6 +151,35 @@ exports.createLink = (req, res) => {
   });
 };
 
+exports.updateExpireDate = (req, res) => {
+  const apiKey = req.headers['apikey'];
+  parseIp(req);
+
+  console.log(
+    'Pinged: PUT /api/v2/links/:shortUrl/expire from IP: ' + parseIp(req)
+  );
+
+  UrlV2.findOne({
+    $and: [
+      {
+        shortUrl: req.params.shortUrl,
+      },
+      {
+        APIKey: apiKey,
+      },
+    ],
+  }).then((url) => {
+    if (url !== null) {
+      url.expireAt = req.body.expireAt;
+      url.save().then((url) => {
+        res.status(200).json(url);
+      });
+    } else {
+      res.status(404).json({ message: 'Short url not found' });
+    }
+  });
+};
+
 exports.updateLink = (req, res) => {
   const apiKey = req.headers['apikey'];
   if (!apiKey) {
@@ -173,6 +202,35 @@ exports.updateLink = (req, res) => {
 
 exports.deleteLink = (req, res) => {
   const apiKey = req.headers['apikey'];
+  // console.log(req.headers);
+  // if (!apiKey) {
+  //   return res.status(401).json({ message: 'Please supply a valid api key!' });
+  // }
+  // const checkAPIkey = await Auth.findOne({ APIKey: apiKey });
+  // if (!checkAPIkey) {
+  //   return res.status(401).json({ message: 'Unauthorized!' });
+  // }
+
+  // const urlCheck = await UrlV2.findOne({
+  //   $and: [{ shortUrl: req.params.shortUrl }, { APIKey: apiKey }],
+  // });
+
+  // parseIp(req);
+
+  // if (url !== null) {
+  //   console.log('Redirecting to: ' + url.longUrl);
+  //   console.log(
+  //     'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
+  //   );
+  // } else {
+  //   console.log(
+  //     'Pinged: GET /' +
+  //       req.params.shortUrl +
+  //       ' from IP: ' +
+  //       parseIp(req) +
+  //       ' but no short url found'
+  //   );
+  // }
   if (!apiKey) {
     UrlV2.findByIdAndRemove(req.params.id)
       .then((url) => {

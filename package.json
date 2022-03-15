@@ -1,15 +1,16 @@
 {
   "name": "hostmio",
-  "version": "1.4.2",
+  "version": "2.1.8-alpha",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "build": "chmod +x ./deploy.sh && ./deploy.sh",
+    "build": "./deploy.sh",
     "test": "echo 'running tests...'"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "debug": "~2.6.9",
     "dotenv": "^14.3.2",
     "express": "~4.16.1",
@@ -21,6 +22,7 @@
     "node-ssh": "^12.0.3",
     "shortid": "^2.2.16",
     "treblle": "^1.0.2",
-    "valid-url": "^1.0.9"
+    "valid-url": "^1.0.9",
+    "vhost": "^3.0.2"
   }
 }

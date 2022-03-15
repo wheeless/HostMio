@@ -13,6 +13,42 @@ const rfs = require('rotating-file-stream');
 /**
  * Controllers (route handlers).
  */
+
+morgan(function (tokens, req, res) {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'),
+    '-',
+    tokens['response-time'](req, res),
+    'ms',
+  ].join(' ');
+});
+
+const pad = (num) => (num > 9 ? '' : '0') + num;
+const generator = (index) => {
+  let time = new Date();
+  if (!time) return 'access.log';
+
+  var month = time.getFullYear() + '-' + pad(time.getMonth() + 1);
+  var day = pad(time.getDate());
+
+  return `${month}-${day}-access.log`;
+};
+
+// create a rotating write stream
+var accessLogStream = rfs.createStream(generator, {
+  size: '10M', // rotate every 10 MegaBytes written
+  interval: '1d', // rotate daily
+  compress: 'gzip', // compress rotated files
+  maxFiles: 14, // keep up to 4 rotated log files
+  path: path.join(__dirname, 'logs'),
+});
+
+// setup the logger
+app.use(morgan('combined', { stream: accessLogStream }));
+
 const linksController = require('./controllers/links_v1');
 const linksV2Controller = require('./controllers/links_v2');
 const authController = require('./controllers/auth');
@@ -56,41 +92,6 @@ app.get('/api/v2/links', linksV2Controller.getLinks);
 app.post('/api/v2/links', linksV2Controller.createLink);
 app.delete('/api/v2/links/:id', linksV2Controller.deleteLink);
 app.put('/api/v2/links/:id', linksV2Controller.updateLink);
-
-morgan(function (tokens, req, res) {
-  return [
-    tokens.method(req, res),
-    tokens.url(req, res),
-    tokens.status(req, res),
-    tokens.res(req, res, 'content-length'),
-    '-',
-    tokens['response-time'](req, res),
-    'ms',
-  ].join(' ');
-});
-
-const pad = (num) => (num > 9 ? '' : '0') + num;
-const generator = (index) => {
-  let time = new Date();
-  if (!time) return 'access.log';
-
-  var month = time.getFullYear() + '-' + pad(time.getMonth() + 1);
-  var day = pad(time.getDate());
-
-  return `${month}-${day}-access.log`;
-};
-
-// create a rotating write stream
-var accessLogStream = rfs.createStream(generator, {
-  size: '10M', // rotate every 10 MegaBytes written
-  interval: '1d', // rotate daily
-  compress: 'gzip', // compress rotated files
-  maxFiles: 14, // keep up to 4 rotated log files
-  path: path.join(__dirname, 'logs'),
-});
-
-// setup the logger
-app.use(morgan('combined', { stream: accessLogStream }));
 
 if (env === 'development') {
   app.use(cors());

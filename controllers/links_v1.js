@@ -27,7 +27,9 @@ exports.getLink = async (req, res) => {
     if (url !== null) {
       return res.redirect(url.longUrl);
     } else {
-      return res.status(404).json('No url found');
+      return res
+        .status(404)
+        .redirect(process.env.CLIENT_URL + process.env.NOT_FOUND_PATH);
     }
   } catch (err) {
     console.error(err);

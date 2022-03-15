@@ -20,7 +20,9 @@ exports.getLink = async (req, res) => {
           req.params.shortUrl +
           ' from IP: ' +
           parseIp(req) +
-          ' but no short url found'
+          ' but no short url found. Forwarding to ' +
+          process.env.CLIENT_URL +
+          process.env.NOT_FOUND_PATH
       );
     }
 

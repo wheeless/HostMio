@@ -8,7 +8,8 @@ var app = express();
 require('dotenv').config({ path: '.env' });
 const { useTreblle } = require('treblle');
 const env = process.env.NODE_ENV || 'development';
-
+var morgan = require('morgan');
+const rfs = require('rotating-file-stream');
 /**
  * Controllers (route handlers).
  */
@@ -34,33 +35,29 @@ if (process.env.TREBLLE_APIKEY && process.env.TREBLLE_PROJECTID) {
 // Prevent CORS errors
 app.get('/api/v1/links/:shortUrl', cors(), linksController.getLink);
 
-// if (env === 'development') {
-//   app.use(cors());
-// } else if (env === 'production') {
-//   // Customize your cors options here
-//   // Edit your ALLOWED_ORIGINS in the .env file
-//   const allowedOrigins = process.env.ALLOWED_ORIGINS;
-//   const allowedOriginsArray = allowedOrigins
-//     .split(',')
-//     .map((item) => item.trim());
-//   console.log(allowedOriginsArray);
-//   var corsOptions = {
-//     origin: function (origin, callback) {
-//       if (allowedOriginsArray.indexOf(origin) !== -1) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error('Where TF is your access token?'));
-//       }
-//     },
-//   };
-//   app.use(cors(corsOptions));
-// } else {
-//   console.log('Error: NODE_ENV not set to development or production');
-//   process.exit(1);
-// }
-// // End of cors customization section
+morgan(function (tokens, req, res) {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'),
+    '-',
+    tokens['response-time'](req, res),
+    'ms',
+  ].join(' ');
+});
 
-// Connect to database
+// create a rotating write stream
+var accessLogStream = rfs.createStream('access.log', {
+  size: '10M', // rotate every 10 MegaBytes written
+  interval: '1d', // rotate daily
+  compress: 'gzip', // compress rotated files
+  path: path.join(__dirname, 'logs'),
+});
+
+// setup the logger
+app.use(morgan('combined', { stream: accessLogStream }));
+
 connectDB();
 
 app.use(logger('dev'));

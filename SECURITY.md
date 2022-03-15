@@ -5,7 +5,7 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 2.0.0   | :white_check_mark: |
+| 2.x.x-alpha   | :white_check_mark: |
 | 1.4.1   | :white_check_mark: |
 | 1.3.x   | :x:                |
 | 1.1.5   | :x:                |

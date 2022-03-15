@@ -74,10 +74,10 @@ const generator = (index) => {
   let time = new Date();
   if (!time) return 'access.log';
 
-  var month = time.getFullYear() + '' + pad(time.getMonth() + 1);
+  var month = time.getFullYear() + '-' + pad(time.getMonth() + 1);
   var day = pad(time.getDate());
 
-  return `${month}-${month}${day}-access.log`;
+  return `${month}-${month}-${day}-access.log`;
 };
 
 // create a rotating write stream

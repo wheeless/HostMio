@@ -42,7 +42,7 @@ var accessLogStream = rfs.createStream(generator, {
   size: '10M', // rotate every 10 MegaBytes written
   interval: '1d', // rotate daily
   compress: 'gzip', // compress rotated files
-  maxFiles: 14, // keep up to 4 rotated log files
+  maxFiles: 14, // keep up to 14 rotated log files
   path: path.join(__dirname, 'logs'),
 });
 
@@ -85,8 +85,8 @@ app.post('/api/auth/signup', authController.signup);
 // Controller v1 Routes
 app.get('/api/v1/links', cors(), linksController.getLinks);
 app.post('/api/v1/links', cors(), linksController.createLink);
-app.delete('/api/v1/links/:id', linksController.deleteLink);
-app.put('/api/v1/links/:id', linksController.updateLink);
+app.delete('/api/v1/links/:id', cors(), linksController.deleteLink);
+app.put('/api/v1/links/:id', cors(), linksController.updateLink);
 // Controller v2 Routes
 app.get('/api/v2/links', linksV2Controller.getLinks);
 app.post('/api/v2/links', linksV2Controller.createLink);

@@ -28,6 +28,7 @@ exports.getLink = async (req, res) => {
 
     if (url !== null) {
       return res.redirect(url.longUrl);
+      //return res.json([url.longUrl, url.shortUrl, url.date]);
     } else {
       return res
         .status(404)
@@ -69,6 +70,12 @@ exports.createLink = (req, res) => {
       text: 'Please add a long URL',
     });
   }
+  // // Check if expire date exists
+  // if (!req.body.expireAt) {
+  //   errors.push({
+  //     text: 'Please add an Expire Date',
+  //   });
+  // }
   // Check long url is valid
   if (!validUrl.isUri(req.body.longUrl)) {
     errors.push({
@@ -92,6 +99,7 @@ exports.createLink = (req, res) => {
           errors: errors,
           longUrl: req.body.longUrl,
           shortUrl: req.body.shortUrl,
+          expireAt: req.body.expireAt,
         });
         // If no errors, create new url
       } else if (!req.body.shortUrl) {
@@ -101,6 +109,7 @@ exports.createLink = (req, res) => {
           longUrl: req.body.longUrl,
           shortUrl: urlCode,
           date: new Date(),
+          expireAt: req.body.expireAt,
         };
         // Save url
         new Url(newUrl).save().then((url) => {
@@ -111,6 +120,7 @@ exports.createLink = (req, res) => {
           longUrl: req.body.longUrl,
           shortUrl: req.body.shortUrl,
           date: new Date(),
+          expireAt: req.body.expireAt,
         };
         new Url(newUrl).save().then((url) => {
           res.status(200).json(url);

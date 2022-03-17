@@ -41,7 +41,7 @@ const generator = (index) => {
 var accessLogStream = rfs.createStream(generator, {
   size: '10M', // rotate every 10 MegaBytes written
   interval: '1d', // rotate daily
-  compress: 'gzip', // compress rotated files
+  compress: 'zip', // compress rotated files
   maxFiles: 14, // keep up to 14 rotated log files
   path: path.join(__dirname, 'logs'),
 });

@@ -130,6 +130,16 @@ exports.createLink = (req, res) => {
   });
 };
 
+// const user = await userSch.findById(req.params.id, {
+//   email_verified: 1,
+//   roles: 1,
+//   name: 1,
+//   email: 1,
+//   bio: 1,
+//   updated_at: 1,
+//   is_active: 1,
+// });
+
 exports.updateLink = (req, res) => {
   Url.findById(req.params.id)
     .then((url) => {

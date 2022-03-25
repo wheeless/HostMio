@@ -4,7 +4,16 @@ const Url = require('../models/Url');
 
 exports.getLink = async (req, res) => {
   try {
-    const url = await Url.findOne({ shortUrl: req.params.shortUrl });
+    const url = await Url.findOne(
+      { shortUrl: req.params.shortUrl },
+      {
+        shortUrl: 1,
+        longUrl: 1,
+        expireAt: 1,
+        date: 1,
+      }
+    );
+    // console.log(url);
     const parseIp = (req) =>
       req.headers['x-forwarded-for']?.split(',').shift() ||
       req.socket?.remoteAddress;
@@ -27,7 +36,7 @@ exports.getLink = async (req, res) => {
     }
 
     if (url !== null) {
-      return res.redirect(url.longUrl);
+      return res.json(url);
       //return res.json([url.longUrl, url.shortUrl, url.date]);
     } else {
       return res

@@ -1,7 +1,10 @@
 const validUrl = require('valid-url');
 const shortid = require('shortid');
 const Url = require('../models/Url');
-
+// use $ and @ instead of - and _
+shortid.characters(
+  '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@'
+);
 exports.getLink = async (req, res) => {
   try {
     const url = await Url.findOne(
@@ -64,7 +67,6 @@ exports.getLinks = (req, res) => {
 
 exports.createLink = (req, res) => {
   let errors = [];
-  let expireDate = new Date();
   const parseIp = (req) =>
     req.headers['x-forwarded-for']?.split(',').shift() ||
     req.socket?.remoteAddress;
@@ -78,15 +80,6 @@ exports.createLink = (req, res) => {
     });
   }
 
-  // if (!req.body.expireAt) {
-  //   expireAt = expireDate + 1000 * 60 * 60 * 24;
-  // }
-  // // Check if expire date exists
-  // if (!req.body.expireAt) {
-  //   errors.push({
-  //     text: 'Please add an Expire Date',
-  //   });
-  // }
   // Check long url is valid
   if (!validUrl.isUri(req.body.longUrl)) {
     errors.push({

@@ -13,7 +13,6 @@ exports.getLink = async (req, res) => {
         date: 1,
       }
     );
-    // console.log(url);
     const parseIp = (req) =>
       req.headers['x-forwarded-for']?.split(',').shift() ||
       req.socket?.remoteAddress;
@@ -37,7 +36,6 @@ exports.getLink = async (req, res) => {
 
     if (url !== null) {
       return res.json(url);
-      //return res.json([url.longUrl, url.shortUrl, url.date]);
     } else {
       return res
         .status(404)
@@ -66,7 +64,7 @@ exports.getLinks = (req, res) => {
 
 exports.createLink = (req, res) => {
   let errors = [];
-
+  let expireDate = new Date();
   const parseIp = (req) =>
     req.headers['x-forwarded-for']?.split(',').shift() ||
     req.socket?.remoteAddress;
@@ -79,6 +77,10 @@ exports.createLink = (req, res) => {
       text: 'Please add a long URL',
     });
   }
+
+  // if (!req.body.expireAt) {
+  //   expireAt = expireDate + 1000 * 60 * 60 * 24;
+  // }
   // // Check if expire date exists
   // if (!req.body.expireAt) {
   //   errors.push({

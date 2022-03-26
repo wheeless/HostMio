@@ -4,7 +4,10 @@ const urlSchema = new mongoose.Schema({
   longUrl: String,
   shortUrl: String,
   date: { type: Date, default: Date.now },
-  expireAt: { type: Date, default: Date.now() + 2592000000 },
+  expireAt: {
+    type: Date,
+    default: () => new Date(+new Date() + 30 * 24 * 60 * 60 * 1000),
+  },
 });
 
 module.exports = mongoose.model('Url', urlSchema);

@@ -21,7 +21,6 @@ exports.getLink = async (req, res) => {
       req.socket?.remoteAddress;
 
     if (url !== null) {
-      console.log('Redirecting to: ' + url.longUrl);
       console.log(
         'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
       );

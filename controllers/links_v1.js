@@ -41,7 +41,7 @@ exports.getLink = async (req, res) => {
     } else {
       return res
         .status(404)
-        .redirect(process.env.CLIENT_URL + process.env.NOT_FOUND_PATH);
+        .json({ longUrl: process.env.CLIENT_URL + process.env.NOT_FOUND_PATH });
     }
   } catch (err) {
     console.error(err);

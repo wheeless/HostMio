@@ -39,9 +39,10 @@ exports.getLink = async (req, res) => {
     if (url !== null) {
       return res.json(url);
     } else {
-      return res
-        .status(404)
-        .json({ longUrl: process.env.CLIENT_URL + process.env.NOT_FOUND_PATH });
+      return res.status(404).json({
+        longUrl: process.env.CLIENT_URL + process.env.NOT_FOUND_PATH,
+        shortUrl: req.params.shortUrl,
+      });
     }
   } catch (err) {
     console.error(err);

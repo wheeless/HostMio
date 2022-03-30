@@ -1,9 +1,10 @@
 const validUrl = require('valid-url');
 const shortid = require('shortid');
 const Url = require('../models/Url');
+const { json } = require('express/lib/response');
 // use $ and @ instead of - and _
 shortid.characters(
-  '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@'
+  '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-'
 );
 exports.getLink = async (req, res) => {
   try {
@@ -31,18 +32,9 @@ exports.getLink = async (req, res) => {
           req.params.shortUrl +
           ' from IP: ' +
           parseIp(req) +
-          ' but no short url found. Forwarding to ' +
-          process.env.CLIENT_URL +
-          process.env.NOT_FOUND_PATH
+          ' but no short url found.'
       );
-      return res.status(404).json([
-        {
-          longUrl: process.env.CLIENT_URL + process.env.NOT_FOUND_PATH,
-          shortUrl: process.env.NOT_FOUND_PATH,
-          date: new Date(),
-          expireAt: null,
-        },
-      ]);
+      res.status(404).json({ message: 'No short url found' });
     }
   } catch (err) {
     console.error(err);

@@ -24,6 +24,7 @@ exports.getLink = async (req, res) => {
       console.log(
         'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
       );
+      return res.json(url);
     } else {
       console.log(
         'Pinged: GET /' +
@@ -34,15 +35,14 @@ exports.getLink = async (req, res) => {
           process.env.CLIENT_URL +
           process.env.NOT_FOUND_PATH
       );
-    }
-
-    if (url !== null) {
-      return res.json(url);
-    } else {
-      return res.status(404).json({
-        longUrl: process.env.CLIENT_URL + process.env.NOT_FOUND_PATH,
-        shortUrl: req.params.shortUrl,
-      });
+      return res.status(404).json([
+        {
+          longUrl: process.env.CLIENT_URL + process.env.NOT_FOUND_PATH,
+          shortUrl: process.env.NOT_FOUND_PATH,
+          date: new Date(),
+          expireAt: null,
+        },
+      ]);
     }
   } catch (err) {
     console.error(err);

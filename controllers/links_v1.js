@@ -136,12 +136,51 @@ exports.createLink = (req, res) => {
 //   is_active: 1,
 // });
 
+exports.updateExpireAt = (req, res) => {
+  const parseIp = (req) =>
+    req.headers['x-forwarded-for']?.split(',').shift() ||
+    req.socket?.remoteAddress;
+
+  console.log(
+    'Pinged: PUT /api/v1/links/' +
+      req.params.shortUrl +
+      '/expireAt from IP: ' +
+      parseIp(req)
+  );
+
+  Url.findOne({
+    shortUrl: req.params.shortUrl,
+  })
+    .then((url) => {
+      if (url) {
+        if (!req.body.expireAt) {
+          url.expireAt = Date.now() + 30 * 24 * 60 * 60 * 1000;
+        } else {
+          url.expireAt = req.body.expireAt;
+        }
+
+        url.save().then((url) => {
+          res.status(200).json(url);
+        });
+      } else {
+        res.status(404).json({ message: 'No short url found' });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.message });
+    });
+};
+
 exports.updateLink = (req, res) => {
   Url.findById(req.params.id)
     .then((url) => {
-      url.longUrl = req.body.longUrl;
       url.shortUrl = req.body.shortUrl;
       url.date = new Date();
+      if (!req.body.expireAt) {
+        url.expireAt = Date.now() + 30 * 24 * 60 * 60 * 1000;
+      } else {
+        url.expireAt = req.body.expireAt;
+      }
       url.save().then((url) => {
         res.json(url);
       });

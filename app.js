@@ -69,7 +69,6 @@ if (process.env.TREBLLE_APIKEY && process.env.TREBLLE_PROJECTID) {
 }
 
 // Prevent CORS errors
-app.get('/api/v1/links/:shortUrl', cors(), linksController.getLink);
 
 connectDB();
 
@@ -84,9 +83,15 @@ app.post('/api/auth/signup', authController.signup);
 
 // Controller v1 Routes
 app.get('/api/v1/links', cors(), linksController.getLinks);
+app.get('/api/v1/links/:shortUrl', cors(), linksController.getLink);
 app.post('/api/v1/links', cors(), linksController.createLink);
 app.delete('/api/v1/links/:id', cors(), linksController.deleteLink);
 app.put('/api/v1/links/:id', cors(), linksController.updateLink);
+app.patch(
+  '/api/v1/links/:shortUrl/expire',
+  cors(),
+  linksController.updateExpireAt
+);
 // Controller v2 Routes
 app.get('/api/v2/links', linksV2Controller.getLinks);
 app.post('/api/v2/links', linksV2Controller.createLink);

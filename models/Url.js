@@ -8,6 +8,11 @@ const urlSchema = new mongoose.Schema({
     type: Date,
     default: () => new Date(+new Date() + 30 * 24 * 60 * 60 * 1000),
   },
+  clicks: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
 });
 
 module.exports = mongoose.model('Url', urlSchema);

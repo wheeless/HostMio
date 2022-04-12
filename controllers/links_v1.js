@@ -15,6 +15,7 @@ exports.getLink = async (req, res) => {
         longUrl: 1,
         expireAt: 1,
         date: 1,
+        clicks: 1,
       }
     );
     const parseIp = (req) =>
@@ -25,6 +26,47 @@ exports.getLink = async (req, res) => {
       console.log(
         'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
       );
+      url.clicks++;
+      await url.save();
+      return res.json(url);
+    } else {
+      console.log(
+        'Pinged: GET /' +
+          req.params.shortUrl +
+          ' from IP: ' +
+          parseIp(req) +
+          ' but no short url found.'
+      );
+      res.status(404).json({ message: 'No short url found' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('Server Error');
+  }
+};
+
+exports.getClicks = async (req, res) => {
+  try {
+    const url = await Url.findOne(
+      { shortUrl: req.params.shortUrl },
+      {
+        shortUrl: 1,
+        clicks: 1,
+      }
+    );
+    const parseIp = (req) =>
+      req.headers['x-forwarded-for']?.split(',').shift() ||
+      req.socket?.remoteAddress;
+
+    if (url !== null) {
+      console.log(
+        'Pinged: GET /' +
+          req.params.shortUrl +
+          '/clicks from IP: ' +
+          parseIp(req)
+      );
+      url.clicks++;
+      await url.save();
       return res.json(url);
     } else {
       console.log(

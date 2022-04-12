@@ -93,7 +93,7 @@ app.patch(
   linksController.updateExpireAt
 );
 app.get('/api/v1/links/:shortUrl/clicks', cors(), linksController.getClicks);
-// app.get('/api/v1/links/:shortUrl/stats', cors(), linksController.getStats);
+app.get('/api/v1/links/:shortUrl/stats', cors(), linksController.getStats);
 // Controller v2 Routes
 app.get('/api/v2/links', linksV2Controller.getLinks);
 app.post('/api/v2/links', linksV2Controller.createLink);

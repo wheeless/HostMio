@@ -65,8 +65,6 @@ exports.getClicks = async (req, res) => {
           '/clicks from IP: ' +
           parseIp(req)
       );
-      url.clicks++;
-      await url.save();
       return res.json(url);
     } else {
       console.log(

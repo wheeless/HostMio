@@ -26,7 +26,7 @@ exports.getLink = async (req, res) => {
         'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
       );
       url.clicks++;
-      url.points = url.points + 10;
+      url.points = url.points + 25;
       await url.save();
       return res.json(url);
     } else {

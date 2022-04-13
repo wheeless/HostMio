@@ -13,9 +13,8 @@ exports.getLink = async (req, res) => {
       {
         shortUrl: 1,
         longUrl: 1,
-        expireAt: 1,
-        date: 1,
         clicks: 1,
+        points: 1,
       }
     );
     const parseIp = (req) =>
@@ -27,6 +26,7 @@ exports.getLink = async (req, res) => {
         'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
       );
       url.clicks++;
+      url.points = url.points + 10;
       await url.save();
       return res.json(url);
     } else {
@@ -222,9 +222,9 @@ exports.updateExpireAt = (req, res) => {
     req.socket?.remoteAddress;
 
   console.log(
-    'Pinged: PUT /api/v1/links/' +
+    'Pinged: PATCH /api/v1/links/' +
       req.params.shortUrl +
-      '/expireAt from IP: ' +
+      '/expire from IP: ' +
       parseIp(req)
   );
 
@@ -242,6 +242,46 @@ exports.updateExpireAt = (req, res) => {
         url.save().then((url) => {
           res.status(200).json(url);
         });
+      } else {
+        res.status(404).json({ message: 'No short url found' });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.message });
+    });
+};
+
+exports.spendPoints = (req, res) => {
+  const parseIp = (req) =>
+    req.headers['x-forwarded-for']?.split(',').shift() ||
+    req.socket?.remoteAddress;
+
+  console.log(
+    'Pinged: PATCH /api/v1/links/' +
+      req.params.shortUrl +
+      '/spend/' +
+      req.params.points +
+      ' from IP: ' +
+      parseIp(req)
+  );
+
+  Url.findOne({
+    shortUrl: req.params.shortUrl,
+  })
+    .then((url) => {
+      if (url) {
+        if (99 > url.points) {
+          res.status(400).json({ message: 'Not enough points' });
+        } else {
+          url.points = url.points - req.params.points;
+          console.log(url.points);
+          url.expireAt =
+            +new Date(url.expireAt) + req.params.points * 60 * 60 * 1000;
+          // url.expireAt = url.expireAt + req.params.points * 60 * 60 * 1000;
+          url.save().then((url) => {
+            res.status(200).json(url);
+          });
+        }
       } else {
         res.status(404).json({ message: 'No short url found' });
       }

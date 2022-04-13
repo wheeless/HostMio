@@ -94,6 +94,11 @@ app.patch(
 );
 app.get('/api/v1/links/:shortUrl/clicks', cors(), linksController.getClicks);
 app.get('/api/v1/links/:shortUrl/stats', cors(), linksController.getStats);
+app.patch(
+  '/api/v1/links/:shortUrl/spend/:points',
+  cors(),
+  linksController.spendPoints
+);
 // Controller v2 Routes
 app.get('/api/v2/links', linksV2Controller.getLinks);
 app.post('/api/v2/links', linksV2Controller.createLink);

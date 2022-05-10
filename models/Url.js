@@ -8,6 +8,10 @@ const urlSchema = new mongoose.Schema({
     type: Date,
     default: () => new Date(+new Date() + 30 * 24 * 60 * 60 * 1000),
   },
+  expireRefresh: {
+    type: Boolean,
+    default: false,
+  },
   clicks: {
     type: Number,
     required: true,

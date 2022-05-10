@@ -90,6 +90,8 @@ exports.getStats = async (req, res) => {
         shortUrl: 1,
         longUrl: 1,
         expireAt: 1,
+        clicks: 1,
+        points: 1,
         date: 1,
         clicks: 1,
       }
@@ -103,6 +105,41 @@ exports.getStats = async (req, res) => {
         'Pinged: GET /' +
           req.params.shortUrl +
           '/stats from IP: ' +
+          parseIp(req)
+      );
+      return res.json(url);
+    } else {
+      console.log(
+        'Pinged: GET /' +
+          req.params.shortUrl +
+          ' from IP: ' +
+          parseIp(req) +
+          ' but no short url found.'
+      );
+      res.status(404).json({ message: 'No short url found' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('Server Error');
+  }
+};
+
+exports.getSpecificStats = async (req, res) => {
+  try {
+    const url = Url.findOne({ shortUrl: req.params.shortUrl }, [
+      'clicks',
+      'points',
+    ]);
+    const parseIp = (req) =>
+      req.headers['x-forwarded-for']?.split(',').shift() ||
+      req.socket?.remoteAddress;
+
+    if (url !== null) {
+      console.log(
+        'Pinged: GET /' +
+          req.params.shortUrl +
+          '/stats/' +
+          ' from IP: ' +
           parseIp(req)
       );
       return res.json(url);
@@ -233,15 +270,22 @@ exports.updateExpireAt = (req, res) => {
   })
     .then((url) => {
       if (url) {
-        if (!req.body.expireAt) {
-          url.expireAt = Date.now() + 30 * 24 * 60 * 60 * 1000;
+        if (url.expireRefresh) {
+          res.status(403).json({
+            message:
+              'Expire date already refreshed. Please use points to extend the time.',
+          });
         } else {
-          url.expireAt = req.body.expireAt;
+          if (!req.body.expireAt) {
+            url.expireAt = Date.now() + 30 * 24 * 60 * 60 * 1000;
+          } else {
+            url.expireAt = req.body.expireAt;
+          }
+          // url.expireRefresh = true;
+          url.save().then((url) => {
+            res.status(200).json(url);
+          });
         }
-
-        url.save().then((url) => {
-          res.status(200).json(url);
-        });
       } else {
         res.status(404).json({ message: 'No short url found' });
       }
@@ -251,7 +295,7 @@ exports.updateExpireAt = (req, res) => {
     });
 };
 
-exports.spendPoints = (req, res) => {
+exports.spendPoints = async (req, res) => {
   const parseIp = (req) =>
     req.headers['x-forwarded-for']?.split(',').shift() ||
     req.socket?.remoteAddress;
@@ -274,7 +318,6 @@ exports.spendPoints = (req, res) => {
           res.status(400).json({ message: 'Not enough points' });
         } else {
           url.points = url.points - req.params.points;
-          console.log(url.points);
           url.expireAt =
             +new Date(url.expireAt) + req.params.points * 60 * 60 * 1000;
           // url.expireAt = url.expireAt + req.params.points * 60 * 60 * 1000;

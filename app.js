@@ -94,6 +94,11 @@ app.patch(
 );
 app.get('/api/v1/links/:shortUrl/clicks', cors(), linksController.getClicks);
 app.get('/api/v1/links/:shortUrl/stats', cors(), linksController.getStats);
+app.get(
+  '/api/v1/links/:shortUrl/stats/:stats',
+  cors(),
+  linksController.getSpecificStats
+);
 app.patch(
   '/api/v1/links/:shortUrl/spend/:points',
   cors(),
@@ -132,5 +137,7 @@ if (env === 'development') {
 // End of cors customization section
 
 console.log('Launch Successful');
+
+console.log('PORT: ', process.env.PORT);
 
 module.exports = app;

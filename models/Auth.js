@@ -21,6 +21,7 @@ const AuthSchema = new mongoose.Schema({
   },
   referred_by: {
     type: String,
+    required: false,
     default: null,
   },
   avatar: {

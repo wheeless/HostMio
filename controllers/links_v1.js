@@ -25,10 +25,10 @@ exports.getLink = async (req, res) => {
       console.log(
         'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
       );
-      url.clicks++;
+      await url.clicks++;
       url.points = url.points + 25;
       await url.save();
-      return res.json(url);
+      return await res.json(url);
     } else {
       console.log(
         'Pinged: GET /' +
@@ -195,6 +195,14 @@ exports.createLink = (req, res) => {
       text: 'Invalid url',
     });
   }
+
+  // Check if short url is being set
+  if (req.body.shortUrl) {
+    shortUrlVar = req.body.shortUrl;
+  } else {
+    shortUrlVar = shortid.generate();
+  }
+
   // Check if errors array is empty
   Url.findOne({
     $or: [
@@ -214,32 +222,20 @@ exports.createLink = (req, res) => {
           shortUrl: req.body.shortUrl,
           expireAt: req.body.expireAt,
         });
-        // If no errors, create new url
-      } else if (!req.body.shortUrl) {
-        const urlCode = shortid.generate();
-        // Create new url
-        const newUrl = {
-          longUrl: req.body.longUrl,
-          shortUrl: urlCode,
-          date: new Date(),
-          expireAt: req.body.expireAt,
-        };
-        // Save url
-        new Url(newUrl).save().then((url) => {
-          res.status(200).json(url);
-        });
       } else {
+        // If no errors
         const newUrl = {
-          longUrl: req.body.longUrl,
-          shortUrl: req.body.shortUrl,
-          date: new Date(),
-          expireAt: req.body.expireAt,
+          // Create new url
+          longUrl: req.body.longUrl, // Long url
+          shortUrl: shortUrlVar, // Short url
+          date: new Date(), // Date
+          expireAt: req.body.expireAt, // Expire at
         };
         new Url(newUrl).save().then((url) => {
           res.status(200).json(url);
-        });
-      }
-    }
+        }); // Save new url
+      } // end else
+    } // end else
   });
 };
 
@@ -277,7 +273,7 @@ exports.updateExpireAt = (req, res) => {
           });
         } else {
           if (!req.body.expireAt) {
-            url.expireAt = Date.now() + 30 * 24 * 60 * 60 * 1000;
+            url.expireAt = +new Date(url.expireAt) + 30 * 24 * 60 * 60 * 1000;
           } else {
             url.expireAt = req.body.expireAt;
           }
@@ -320,7 +316,6 @@ exports.spendPoints = async (req, res) => {
           url.points = url.points - req.params.points;
           url.expireAt =
             +new Date(url.expireAt) + req.params.points * 60 * 60 * 1000;
-          // url.expireAt = url.expireAt + req.params.points * 60 * 60 * 1000;
           url.save().then((url) => {
             res.status(200).json(url);
           });

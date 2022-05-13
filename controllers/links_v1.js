@@ -45,42 +45,42 @@ exports.getLink = async (req, res) => {
   }
 };
 
-exports.getClicks = async (req, res) => {
-  try {
-    const url = await Url.findOne(
-      { shortUrl: req.params.shortUrl },
-      {
-        shortUrl: 1,
-        clicks: 1,
-      }
-    );
-    const parseIp = (req) =>
-      req.headers['x-forwarded-for']?.split(',').shift() ||
-      req.socket?.remoteAddress;
+// exports.getClicks = async (req, res) => {
+//   try {
+//     const url = await Url.findOne(
+//       { shortUrl: req.params.shortUrl },
+//       {
+//         shortUrl: 1,
+//         clicks: 1,
+//       }
+//     );
+//     const parseIp = (req) =>
+//       req.headers['x-forwarded-for']?.split(',').shift() ||
+//       req.socket?.remoteAddress;
 
-    if (url !== null) {
-      console.log(
-        'Pinged: GET /' +
-          req.params.shortUrl +
-          '/clicks from IP: ' +
-          parseIp(req)
-      );
-      return res.json(url);
-    } else {
-      console.log(
-        'Pinged: GET /' +
-          req.params.shortUrl +
-          ' from IP: ' +
-          parseIp(req) +
-          ' but no short url found.'
-      );
-      res.status(404).json({ message: 'No short url found' });
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json('Server Error');
-  }
-};
+//     if (url !== null) {
+//       console.log(
+//         'Pinged: GET /' +
+//           req.params.shortUrl +
+//           '/clicks from IP: ' +
+//           parseIp(req)
+//       );
+//       return res.json(url);
+//     } else {
+//       console.log(
+//         'Pinged: GET /' +
+//           req.params.shortUrl +
+//           ' from IP: ' +
+//           parseIp(req) +
+//           ' but no short url found.'
+//       );
+//       res.status(404).json({ message: 'No short url found' });
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json('Server Error');
+//   }
+// };
 
 exports.getStats = async (req, res) => {
   try {
@@ -126,23 +126,50 @@ exports.getStats = async (req, res) => {
 
 exports.getSpecificStats = async (req, res) => {
   try {
-    const url = Url.findOne({ shortUrl: req.params.shortUrl }, [
-      'clicks',
-      'points',
-    ]);
+    const url = await Url.findOne(
+      { shortUrl: req.params.shortUrl },
+      {
+        shortUrl: 1,
+        longUrl: 1,
+        expireAt: 1,
+        clicks: 1,
+        points: 1,
+        date: 1,
+        clicks: 1,
+      }
+    );
     const parseIp = (req) =>
       req.headers['x-forwarded-for']?.split(',').shift() ||
       req.socket?.remoteAddress;
 
     if (url !== null) {
-      console.log(
-        'Pinged: GET /' +
-          req.params.shortUrl +
-          '/stats/' +
-          ' from IP: ' +
-          parseIp(req)
-      );
-      return res.json(url);
+      switch (req.params.stat) {
+        case 'longUrl':
+          res.json([url.shortUrl, url.longUrl]);
+          break;
+        case 'clicks':
+          res.json([url.shortUrl, url.clicks]);
+          break;
+        case 'points':
+          res.json([url.shortUrl, url.points]);
+          break;
+        case 'date':
+          res.json([url.shortUrl, url.date]);
+          break;
+        case 'expireAt':
+          res.json([url.shortUrl, url.expireAt]);
+          break;
+        default:
+          console.log(
+            'Pinged: GET /' +
+              req.params.shortUrl +
+              '/stats/' +
+              req.params.stat +
+              ' from IP: ' +
+              parseIp(req)
+          );
+          return res.json(url);
+      }
     } else {
       console.log(
         'Pinged: GET /' +

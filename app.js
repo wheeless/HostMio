@@ -92,10 +92,10 @@ app.patch(
   cors(),
   linksController.updateExpireAt
 );
-app.get('/api/v1/links/:shortUrl/clicks', cors(), linksController.getClicks);
+// app.get('/api/v1/links/:shortUrl/clicks', cors(), linksController.getClicks);
 app.get('/api/v1/links/:shortUrl/stats', cors(), linksController.getStats);
 app.get(
-  '/api/v1/links/:shortUrl/stats/:stats',
+  '/api/v1/links/:shortUrl/stats/:stat',
   cors(),
   linksController.getSpecificStats
 );

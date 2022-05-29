@@ -147,10 +147,6 @@ connectDB()
   })
   .then(() => {
     console.log('Launch Successful');
-    process.on('SIGINT', () => {
-      console.log('Shutting down');
-      process.exit(0);
-    });
   })
   .catch((err) => {
     console.log(err);

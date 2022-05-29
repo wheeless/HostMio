@@ -334,9 +334,9 @@ exports.spendPoints = async (req, res) => {
             message:
               'Not enough points, this link does not have ' +
               req.param.points +
-              ' points. Only ' +
+              ' points. There is only ' +
               url.points +
-              ' points available.',
+              ' point(s) available.',
           });
         } else {
           url.points = url.points - req.params.points;

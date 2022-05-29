@@ -11,6 +11,9 @@ const { useTreblle } = require('treblle');
 const env = process.env.NODE_ENV || 'development';
 var morgan = require('morgan');
 const rfs = require('rotating-file-stream');
+const fileUpload = require('express-fileupload');
+const uuid = require('uuid');
+const fs = require('fs');
 /**
  * Controllers (route handlers).
  */
@@ -53,6 +56,7 @@ app.use(morgan('combined', { stream: accessLogStream }));
 const linksController = require('./controllers/links_v1');
 const linksV2Controller = require('./controllers/links_v2');
 const authController = require('./controllers/auth');
+const { nextTick } = require('process');
 
 app.use(express.json());
 
@@ -70,6 +74,131 @@ if (process.env.TREBLLE_APIKEY && process.env.TREBLLE_PROJECTID) {
 }
 
 // Prevent CORS errors
+
+app.get('/downloads/:fileName', (req, res) => {
+  fileName = req.params.fileName;
+
+  // if (fileName.includes('..')) {
+  //   res.status(403).send('Forbidden');
+  // }
+  // if (fileName.includes('/')) {
+  //   fileName = fileName.split('/').pop();
+  // }
+  // if (fileName.includes('\\')) {
+  //   fileName = fileName.split('\\').pop();
+  // }
+  // if (fileName.includes('%')) {
+  //   fileName = fileName.split('%').pop();
+  // }
+  // if (fileName.includes(' ')) {
+  //   fileName = fileName.split(' ').shift();
+  // }
+  // if (fileName.includes('(')) {
+  //   fileName = fileName.split('(').shift();
+  // }
+  // if (fileName.includes(')')) {
+  //   fileName = fileName.split(')').shift();
+  // }
+  // if (fileName.includes('[')) {
+  //   fileName = fileName.split('[').shift();
+  // }
+  // if (fileName.includes(']')) {
+  //   fileName = fileName.split(']').shift();
+  // }
+  // if (fileName.includes('{')) {
+  //   fileName = fileName.split('{').shift();
+  // }
+  // if (fileName.includes('}')) {
+  //   fileName = fileName.split('}').shift();
+  // }
+  // if (fileName.includes('|')) {
+  //   fileName = fileName.split('|').shift();
+  // }
+  // if (fileName.includes('<')) {
+  //   fileName = fileName.split('<').shift();
+  // }
+  // if (fileName.includes('>')) {
+  //   fileName = fileName.split('>').shift();
+  // }
+  // if (fileName.includes('?')) {
+  //   fileName = fileName.split('?').shift();
+  // }
+  // if (fileName.includes('!')) {
+  //   fileName = fileName.split('!').shift();
+  // }
+  // if (fileName.includes('*')) {
+  //   fileName = fileName.split('*').shift();
+  // }
+  // if (fileName.includes('+')) {
+  //   fileName = fileName.split('+').shift();
+  // }
+  // if (fileName.includes('=')) {
+  //   fileName = fileName.split('=').shift();
+  // }
+
+  const fileCheck = './public/downloads/' + fileName;
+  //Async method
+  fs.access(fileCheck, fs.F_OK, (err) => {
+    if (err) {
+      console.error(err);
+      res.send('File not found');
+    } else {
+      res.download(path.join(__dirname, 'public/downloads', `${fileName}`));
+    }
+  });
+});
+app.use(
+  fileUpload({
+    createParentPath: true,
+  })
+);
+app.post('/upload-avatar', async (req, res) => {
+  try {
+    if (!req.files) {
+      res.send({
+        status: false,
+        message: 'No file uploaded',
+      });
+    } else {
+      //Use the name of the input field (i.e. "avatar") to retrieve the uploaded file
+      let avatar = req.files.avatar;
+      const newFileName = uuid.v4() + '-' + avatar.name;
+      //Use the mv() method to place the file in upload directory (i.e. "uploads")
+      console.log(req.body.downloadable);
+      if (req.body.downloadable === 'true') {
+        avatar.mv(`./public/downloads/` + newFileName, function (err) {
+          if (err) {
+            return res.status(500).send(err);
+          }
+          res.send({
+            status: true,
+            message: 'File uploaded!',
+            data: {
+              name: newFileName,
+              mimetype: avatar.mimetype,
+              size: avatar.size,
+            },
+          });
+        });
+      } else {
+        avatar.mv('./public/uploads/' + newFileName);
+
+        //send response
+        res.send({
+          status: true,
+          message: 'File is uploaded',
+          data: {
+            name: newFileName,
+            mimetype: avatar.mimetype,
+            size: avatar.size,
+          },
+        });
+      }
+    }
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
 
 app.use(logger('dev'));
 app.use(express.json());

@@ -330,7 +330,14 @@ exports.spendPoints = async (req, res) => {
     .then((url) => {
       if (url) {
         if (99 > url.points) {
-          res.status(400).json({ message: 'Not enough points' });
+          res
+            .status(400)
+            .json({
+              message:
+                'Not enough points, this link does not have ' +
+                url.points +
+                ' points',
+            });
         } else {
           url.points = url.points - req.params.points;
           url.expireAt =

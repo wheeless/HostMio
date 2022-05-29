@@ -3,6 +3,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const connectDB = require('./config/db');
+const trebbleConnect = require('./middleware/trebble');
 var cors = require('cors');
 var app = express();
 require('dotenv').config({ path: '.env' });
@@ -70,8 +71,6 @@ if (process.env.TREBLLE_APIKEY && process.env.TREBLLE_PROJECTID) {
 
 // Prevent CORS errors
 
-connectDB();
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -136,8 +135,26 @@ if (env === 'development') {
 }
 // End of cors customization section
 
-console.log('Launch Successful');
-
-console.log('PORT: ', process.env.PORT);
+connectDB()
+  .then(() => {
+    console.log('Connected to the database');
+  })
+  .then(() => {
+    trebbleConnect(app);
+  })
+  .then(() => {
+    console.log(`Server started on port ${process.env.PORT || 8080}`);
+  })
+  .then(() => {
+    console.log('Launch Successful');
+    process.on('SIGINT', () => {
+      console.log('Shutting down');
+      process.exit(0);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+    process.exit(1);
+  });
 
 module.exports = app;

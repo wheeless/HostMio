@@ -160,15 +160,7 @@ exports.getSpecificStats = async (req, res) => {
           res.json([url.shortUrl, url.expireAt]);
           break;
         default:
-          console.log(
-            'Pinged: GET /' +
-              req.params.shortUrl +
-              '/stats/' +
-              req.params.stat +
-              ' from IP: ' +
-              parseIp(req)
-          );
-          return res.json(url);
+          res.status(400).json({ message: 'No stat by that name found', url });
       }
     } else {
       console.log(

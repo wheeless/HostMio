@@ -56,6 +56,7 @@ app.use(morgan('combined', { stream: accessLogStream }));
 const linksController = require('./controllers/links_v1');
 const linksV2Controller = require('./controllers/links_v2');
 const authController = require('./controllers/auth');
+const fileHandler = require('./controllers/fileHandler');
 const { nextTick } = require('process');
 
 app.use(express.json());
@@ -75,129 +76,11 @@ if (process.env.TREBLLE_APIKEY && process.env.TREBLLE_PROJECTID) {
 
 // Prevent CORS errors
 
-app.get('/downloads/:fileName', (req, res) => {
-  fileName = req.params.fileName;
-
-  // if (fileName.includes('..')) {
-  //   res.status(403).send('Forbidden');
-  // }
-  // if (fileName.includes('/')) {
-  //   fileName = fileName.split('/').pop();
-  // }
-  // if (fileName.includes('\\')) {
-  //   fileName = fileName.split('\\').pop();
-  // }
-  // if (fileName.includes('%')) {
-  //   fileName = fileName.split('%').pop();
-  // }
-  // if (fileName.includes(' ')) {
-  //   fileName = fileName.split(' ').shift();
-  // }
-  // if (fileName.includes('(')) {
-  //   fileName = fileName.split('(').shift();
-  // }
-  // if (fileName.includes(')')) {
-  //   fileName = fileName.split(')').shift();
-  // }
-  // if (fileName.includes('[')) {
-  //   fileName = fileName.split('[').shift();
-  // }
-  // if (fileName.includes(']')) {
-  //   fileName = fileName.split(']').shift();
-  // }
-  // if (fileName.includes('{')) {
-  //   fileName = fileName.split('{').shift();
-  // }
-  // if (fileName.includes('}')) {
-  //   fileName = fileName.split('}').shift();
-  // }
-  // if (fileName.includes('|')) {
-  //   fileName = fileName.split('|').shift();
-  // }
-  // if (fileName.includes('<')) {
-  //   fileName = fileName.split('<').shift();
-  // }
-  // if (fileName.includes('>')) {
-  //   fileName = fileName.split('>').shift();
-  // }
-  // if (fileName.includes('?')) {
-  //   fileName = fileName.split('?').shift();
-  // }
-  // if (fileName.includes('!')) {
-  //   fileName = fileName.split('!').shift();
-  // }
-  // if (fileName.includes('*')) {
-  //   fileName = fileName.split('*').shift();
-  // }
-  // if (fileName.includes('+')) {
-  //   fileName = fileName.split('+').shift();
-  // }
-  // if (fileName.includes('=')) {
-  //   fileName = fileName.split('=').shift();
-  // }
-
-  const fileCheck = './public/downloads/' + fileName;
-  //Async method
-  fs.access(fileCheck, fs.F_OK, (err) => {
-    if (err) {
-      console.error(err);
-      res.send('File not found');
-    } else {
-      res.download(path.join(__dirname, 'public/downloads', `${fileName}`));
-    }
-  });
-});
 app.use(
   fileUpload({
     createParentPath: true,
   })
 );
-app.post('/upload-avatar', async (req, res) => {
-  try {
-    if (!req.files) {
-      res.send({
-        status: false,
-        message: 'No file uploaded',
-      });
-    } else {
-      //Use the name of the input field (i.e. "avatar") to retrieve the uploaded file
-      let avatar = req.files.avatar;
-      const newFileName = uuid.v4() + '-' + avatar.name;
-      //Use the mv() method to place the file in upload directory (i.e. "uploads")
-      if (req.body.downloadable === 'true') {
-        avatar.mv(`./public/downloads/` + newFileName, function (err) {
-          if (err) {
-            return res.status(500).send(err);
-          }
-          res.send({
-            status: true,
-            message: 'File uploaded!',
-            data: {
-              name: newFileName,
-              mimetype: avatar.mimetype,
-              size: avatar.size,
-            },
-          });
-        });
-      } else {
-        avatar.mv('./public/uploads/' + newFileName);
-
-        //send response
-        res.send({
-          status: true,
-          message: 'File is uploaded',
-          data: {
-            name: newFileName,
-            mimetype: avatar.mimetype,
-            size: avatar.size,
-          },
-        });
-      }
-    }
-  } catch (err) {
-    res.status(500).send(err);
-  }
-});
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -207,6 +90,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Auth Controller (route handlers).
 app.post('/api/auth/signup', authController.signup);
+
+// File Controller (route handlers).
+app.get('/api/files/downloads/:fileName', fileHandler.downloadFileController);
+app.post('/api/files/upload', fileHandler.upload);
+app.get('/api/files/downloads/', fileHandler.showDownloads);
 
 // Controller v1 Routes
 app.get('/api/v1/links', cors(), linksController.getLinks);
@@ -219,7 +107,6 @@ app.patch(
   cors(),
   linksController.updateExpireAt
 );
-// app.get('/api/v1/links/:shortUrl/clicks', cors(), linksController.getClicks);
 app.get('/api/v1/links/:shortUrl/stats', cors(), linksController.getStats);
 app.get(
   '/api/v1/links/:shortUrl/stats/:stat',
@@ -269,9 +156,6 @@ connectDB()
   })
   .then(() => {
     trebbleConnect(app);
-  })
-  .then(() => {
-    console.log(`Server started on port ${process.env.PORT || 8080}`);
   })
   .then(() => {
     console.log('Launch Successful');

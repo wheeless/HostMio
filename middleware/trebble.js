@@ -8,7 +8,7 @@ const trebbleConnect = async (app) => {
         apiKey: process.env.TREBLLE_APIKEY,
         projectId: process.env.TREBLLE_PROJECTID,
       });
-      console.log('Trebble activated');
+      console.log('Trebble activated and registered');
     } else {
       console.log(
         'No Treblle API Key found, remember to make sure you have a .env file with TREBLLE_APIKEY and TREBLLE_PROJECTID'

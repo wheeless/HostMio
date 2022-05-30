@@ -164,7 +164,6 @@ app.post('/upload-avatar', async (req, res) => {
       let avatar = req.files.avatar;
       const newFileName = uuid.v4() + '-' + avatar.name;
       //Use the mv() method to place the file in upload directory (i.e. "uploads")
-      console.log(req.body.downloadable);
       if (req.body.downloadable === 'true') {
         avatar.mv(`./public/downloads/` + newFileName, function (err) {
           if (err) {

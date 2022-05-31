@@ -79,6 +79,9 @@ if (process.env.TREBLLE_APIKEY && process.env.TREBLLE_PROJECTID) {
 app.use(
   fileUpload({
     createParentPath: true,
+    limits: {
+      fileSize: 20 * 1024 * 1024 * 1024, //20MB max file(s) size
+    },
   })
 );
 
@@ -95,6 +98,7 @@ app.post('/api/auth/signup', authController.signup);
 app.get('/api/files/downloads/:fileName', fileHandler.downloadFileController);
 app.post('/api/files/upload', fileHandler.upload);
 app.get('/api/files/downloads/', fileHandler.showDownloads);
+// app.post('/api/files/test/', fileHandler.uploadWithShortenedUrl);
 
 // Controller v1 Routes
 app.get('/api/v1/links', cors(), linksController.getLinks);

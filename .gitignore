@@ -63,3 +63,4 @@ typings/
 # folders
 /public/downloads/
 /public/uploads/
+/private

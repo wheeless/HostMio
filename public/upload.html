@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form class="form" id="myForm" onsubmit="return true">
+      <label for="file">File Upload:</label>
+      <input type="file" name="file" id="file" aria-label="file" />
+      <label for="downloadable">Downloadable?</label>
+      <input
+        type="checkbox"
+        name="downloadable"
+        id="downloadable"
+        aria-label="downloadable"
+      />
+      <input type="submit" value="Upload" />
+    </form>
+
+    <p id="response"></p>
+    <p id="ifDownloadable"></p>
+
+    <script src="/javascripts/upload.js"></script>
+  </body>
+</html>

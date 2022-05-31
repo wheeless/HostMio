@@ -3,6 +3,7 @@ var path = require('path');
 const fileUpload = require('express-fileupload');
 const uuid = require('uuid');
 const fs = require('fs');
+const UploadedFiles = require('../models/uploadedFiles');
 
 exports.downloadFileController = async = (req, res) => {
   try {
@@ -68,7 +69,6 @@ exports.downloadFileController = async = (req, res) => {
 
     const fileCheck = './public/downloads/' + fileName;
     //Async method
-    console.log('fileCheck: ' + fileCheck);
     fs.access(fileCheck, fs.F_OK, (err) => {
       if (err) {
         console.error(err);
@@ -88,7 +88,7 @@ exports.downloadFileController = async = (req, res) => {
 exports.showDownloads = async (req, res) => {
   try {
     const fileCheck = './public/downloads/';
-    const baseUrl = '/api/files/downloads/';
+    const baseUrl = process.env.BASE_URL + 'api/files/downloads/';
     //Async method
     fs.readdir(fileCheck, function (err, files) {
       if (err) {
@@ -111,6 +111,33 @@ exports.showDownloads = async (req, res) => {
   }
 };
 
+exports.uploadWithShortenedUrl = async (req, res) => {
+  try {
+    let avatar = req.files.avatar;
+    const newFileName = uuid.v4() + '-' + avatar.name;
+    const { downloadable, fileName, size } = req.body;
+    const fileUploader = new UploadedFilesSchema({
+      fileName,
+      size,
+      downloadable,
+      uploadedUrl,
+    });
+
+    avatar.mv(`./public/uploads/${newFileName}`, function (err) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      res.status(200).send({
+        message: 'File uploaded!',
+        fileName: newFileName,
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('Server Error');
+  }
+};
+
 exports.upload = async = (req, res) => {
   try {
     if (!req.files) {
@@ -125,10 +152,13 @@ exports.upload = async = (req, res) => {
       //Use the mv() method to place the file in upload directory (i.e. "uploads")
       if (req.body.downloadable === 'true') {
         avatar.mv(`./public/downloads/` + newFileName);
+        var downloadUrl = process.env.BASE_URL + newFileName;
       } else {
-        avatar.mv('./public/uploads/' + newFileName);
+        avatar.mv('./private/uploads/' + newFileName);
+        var downloadUrl = 'File not downloadable';
       }
       //send response
+
       res.send({
         status: true,
         message: 'File is uploaded',
@@ -137,8 +167,11 @@ exports.upload = async = (req, res) => {
           name: newFileName,
           mimetype: avatar.mimetype,
           size: avatar.size / 1000 + ' bytes',
+          url: downloadUrl,
         },
       });
+
+      //   res.json(response);
     }
   } catch (err) {
     res.status(500).send(err);

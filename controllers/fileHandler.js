@@ -148,6 +148,7 @@ exports.upload = async = (req, res) => {
     } else {
       //Use the name of the input field (i.e. "avatar") to retrieve the uploaded file
       let avatar = req.files.avatar;
+      const thisBaseUrl = process.env.BASE_URL + 'api/files/downloads/';
       const newFileName = uuid.v4() + '-' + avatar.name;
       //Use the mv() method to place the file in upload directory (i.e. "uploads")
       if (req.body.downloadable === 'true') {
@@ -167,7 +168,7 @@ exports.upload = async = (req, res) => {
           name: newFileName,
           mimetype: avatar.mimetype,
           size: avatar.size / 1000 + ' bytes',
-          url: downloadUrl,
+          url: thisBaseUrl + downloadUrl,
         },
       });
 

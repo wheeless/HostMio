@@ -153,7 +153,7 @@ exports.upload = async = (req, res) => {
       //Use the mv() method to place the file in upload directory (i.e. "uploads")
       if (req.body.downloadable === 'true') {
         avatar.mv(`./public/downloads/` + newFileName);
-        var downloadUrl = process.env.BASE_URL + newFileName;
+        var downloadUrl = thisBaseUrl + newFileName;
       } else {
         avatar.mv('./private/uploads/' + newFileName);
         var downloadUrl = 'File not downloadable';
@@ -168,7 +168,7 @@ exports.upload = async = (req, res) => {
           name: newFileName,
           mimetype: avatar.mimetype,
           size: avatar.size / 1000 + ' bytes',
-          url: thisBaseUrl + downloadUrl,
+          url: downloadUrl,
         },
       });
 

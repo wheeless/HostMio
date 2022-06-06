@@ -45,6 +45,49 @@ exports.getLink = async (req, res) => {
   }
 };
 
+exports.incrementClicks = async (req, res) => {
+  try {
+    const url = await Url.findOne(
+      { shortUrl: req.params.shortUrl },
+      {
+        shortUrl: 1,
+        longUrl: 1,
+        clicks: 1,
+        points: 1,
+      }
+    );
+
+    if (url !== null) {
+      await url.clicks++;
+      url.points = url.points + 25;
+      await url.save();
+      return await res.json(url);
+    } else {
+      res.status(404).json({ message: 'No short url found' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('Server Error');
+  }
+};
+
+// exports.incrementClicks = async (req, res) => {
+//   try {
+//     const url = Url.findOne({ shortUrl: req.params.shortUrl });
+//     if (url !== null) {
+//       await url.clicks++;
+//       url.points = url.points + 25;
+//       await url.save();
+//       return res.json(url);
+//     } else {
+//       res.status(404).json({ message: 'No short url found' });
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json('Server Error');
+//   }
+// };
+
 // exports.getClicks = async (req, res) => {
 //   try {
 //     const url = await Url.findOne(

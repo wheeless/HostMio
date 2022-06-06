@@ -4,6 +4,7 @@ const fileUpload = require('express-fileupload');
 const uuid = require('uuid');
 const fs = require('fs');
 const UploadedFiles = require('../models/uploadedFiles');
+const busboy = require('connect-busboy');
 
 exports.downloadFileController = async = (req, res) => {
   try {
@@ -176,5 +177,31 @@ exports.upload = async = (req, res) => {
     }
   } catch (err) {
     res.status(500).send(err);
+  }
+};
+
+exports.uploadNew = async (req, res) => {
+  try {
+    const uploadPath = path.join(__dirname, './private/uploads/');
+
+    req.pipe(req.busboy); // Pipe it trough busboy
+
+    req.busboy.on('file', (fieldname, file, filename) => {
+      console.log(`Upload of '${filename}' started`);
+
+      // Create a write stream of the new file
+      const fstream = fs.createWriteStream(path.join(uploadPath, filename));
+      // Pipe it trough
+      file.pipe(fstream);
+
+      // On finish of the upload
+      fstream.on('close', () => {
+        console.log(`Upload of '${filename}' finished`);
+        res.redirect('back');
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('Server Error');
   }
 };

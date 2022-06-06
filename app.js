@@ -14,6 +14,7 @@ const rfs = require('rotating-file-stream');
 const fileUpload = require('express-fileupload');
 const uuid = require('uuid');
 const fs = require('fs');
+const busboy = require('connect-busboy');
 /**
  * Controllers (route handlers).
  */
@@ -85,6 +86,12 @@ app.use(
   })
 );
 
+app.use(
+  busboy({
+    highWaterMark: 2 * 1024 * 1024, // Set 2MiB buffer
+  })
+); // Insert the busboy middle-ware
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -98,11 +105,47 @@ app.post('/api/auth/signup', authController.signup);
 app.get('/api/files/downloads/:fileName', fileHandler.downloadFileController);
 app.post('/api/files/upload', fileHandler.upload);
 app.get('/api/files/downloads/', fileHandler.showDownloads);
+app.post('/api/files/uploadNew', fileHandler.uploadNew);
+app.route('/upload').post((req, res, next) => {
+  const uploadPath = path.join(__dirname, './private/uploads/');
+  req.pipe(req.busboy); // Pipe it trough busboy
+
+  req.busboy.on('file', (fieldname, file, filename) => {
+    console.log(`Upload of '${filename}' started`);
+
+    // Create a write stream of the new file
+    const fstream = fs.createWriteStream(path.join(uploadPath, filename));
+    // Pipe it trough
+    file.pipe(fstream);
+
+    // On finish of the upload
+    fstream.on('close', () => {
+      console.log(`Upload of '${filename}' finished`);
+      res.redirect('back');
+    });
+  });
+});
+
+app.route('/uploadTest').get((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/html' });
+  res.write(
+    '<form action="upload" method="post" enctype="multipart/form-data">'
+  );
+  res.write('<input type="file" name="fileToUpload"><br>');
+  res.write('<input type="submit">');
+  res.write('</form>');
+  return res.end();
+});
 // app.post('/api/files/test/', fileHandler.uploadWithShortenedUrl);
 
 // Controller v1 Routes
 app.get('/api/v1/links', cors(), linksController.getLinks);
 app.get('/api/v1/links/:shortUrl', cors(), linksController.getLink);
+app.patch(
+  '/api/v1/links/:shortUrl/incrementClicks',
+  cors(),
+  linksController.incrementClicks
+);
 app.post('/api/v1/links', cors(), linksController.createLink);
 app.delete('/api/v1/links/:id', cors(), linksController.deleteLink);
 app.put('/api/v1/links/:id', cors(), linksController.updateLink);

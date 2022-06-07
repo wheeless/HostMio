@@ -32,4 +32,4 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           privateKey: ${{ secrets.PRIVATE_KEY }}
-      #- run: chmod +x ./deploy.sh && ./deploy.sh
+        run: touch test.txt

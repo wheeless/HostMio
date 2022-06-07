@@ -25,8 +25,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: ${{ secrets.avernix }}
+      - name: Run SSH command
+          uses: garygrossgarten/github-action-ssh@v0.6.3
+          command: ls
+          command: cd HostMio
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+          privateKey: ${{ secrets.PRIVATE_KEY}}
       - run: npm ci
-      - run: chmod +x ./deploy.sh && ./deploy.sh
+      #- run: chmod +x ./deploy.sh && ./deploy.sh

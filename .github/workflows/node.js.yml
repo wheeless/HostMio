@@ -28,9 +28,8 @@ jobs:
       - name: Run SSH command
         uses: garygrossgarten/github-action-ssh@release
         with:
-          command: ls && cd HostMio && npm install && pm2 restart 0
+          command: cd HostMio && rm package-lock.json && git pull && npm install && pm2 restart 0
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           privateKey: ${{ secrets.PRIVATE_KEY }}
-      - run: touch test.txt
       #- run: chmod +x ./deploy.sh && ./deploy.sh

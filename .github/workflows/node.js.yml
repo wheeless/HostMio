@@ -28,7 +28,7 @@ jobs:
       - name: Run SSH command
         uses: garygrossgarten/github-action-ssh@release
         with:
-          command: ls
+          command: ls -a
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           privateKey: ${{ secrets.PRIVATE_KEY }}

@@ -28,9 +28,9 @@ jobs:
       - name: Run SSH command
         uses: garygrossgarten/github-action-ssh@release
         with:
-          command: ls -a | grep .
+          command: ls -a, ls -a
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           privateKey: ${{ secrets.PRIVATE_KEY }}
-      #- run: npm ci
+      - run: npm ci
       #- run: chmod +x ./deploy.sh && ./deploy.sh

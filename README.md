@@ -55,7 +55,7 @@ HostMio is a simple yet robust link shortener api. Meant for open source project
 
 ## Documentation
 
-[Documentation](https://api.hostmonkey.io/documentation.html)
+[Documentation(WIP)](https://api.hostmonkey.io/documentation.html)
 
 
 ## Environment Variables

@@ -32,6 +32,6 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           passphrase: ${{ secrets.PASSPHRASE }}
-          privateKey: ${{ secrets.PRIVATE_KEY}}
-      - run: npm ci
+          privateKey: ${{ secrets.PRIVATE_KEY }}
+      #- run: npm ci
       #- run: chmod +x ./deploy.sh && ./deploy.sh

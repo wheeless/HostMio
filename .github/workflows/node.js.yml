@@ -28,7 +28,7 @@ jobs:
       - name: Run SSH command
         uses: garygrossgarten/github-action-ssh@release
         with:
-          command: ls && cd HostMio && npm install && pm2 restart 0
+          command: ls then cd HostMio && npm install && pm2 restart 0
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           privateKey: ${{ secrets.PRIVATE_KEY }}

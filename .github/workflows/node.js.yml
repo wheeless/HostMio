@@ -26,7 +26,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Run SSH command
-          uses: garygrossgarten/github-action-ssh@v0.6.3
+        uses: garygrossgarten/github-action-ssh@v0.6.3
           command: ls
           command: cd HostMio
           host: ${{ secrets.HOST }}

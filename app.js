@@ -49,12 +49,12 @@ const limiter = rateLimit({
   store: new MongoStore({
     uri: `${process.env.MONGO_URI}`,
     // should match windowMs
-    expireTimeMs: 15 * 60 * 1000,
+    expireTimeMs: 60 * 60 * 1000,
     errorHandler: console.error.bind(null, 'rate-limit-mongo'),
     // see Configuration section for more options and details
   }),
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  windowMs: 60 * 60 * 1000, // 1 minute(s)
+  max: 60, // Limit each IP to 60 requests per `window` (here, per 1 minute(s))
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });

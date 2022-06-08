@@ -71,60 +71,6 @@ exports.incrementClicks = async (req, res) => {
   }
 };
 
-// exports.incrementClicks = async (req, res) => {
-//   try {
-//     const url = Url.findOne({ shortUrl: req.params.shortUrl });
-//     if (url !== null) {
-//       await url.clicks++;
-//       url.points = url.points + 25;
-//       await url.save();
-//       return res.json(url);
-//     } else {
-//       res.status(404).json({ message: 'No short url found' });
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json('Server Error');
-//   }
-// };
-
-// exports.getClicks = async (req, res) => {
-//   try {
-//     const url = await Url.findOne(
-//       { shortUrl: req.params.shortUrl },
-//       {
-//         shortUrl: 1,
-//         clicks: 1,
-//       }
-//     );
-//     const parseIp = (req) =>
-//       req.headers['x-forwarded-for']?.split(',').shift() ||
-//       req.socket?.remoteAddress;
-
-//     if (url !== null) {
-//       console.log(
-//         'Pinged: GET /' +
-//           req.params.shortUrl +
-//           '/clicks from IP: ' +
-//           parseIp(req)
-//       );
-//       return res.json(url);
-//     } else {
-//       console.log(
-//         'Pinged: GET /' +
-//           req.params.shortUrl +
-//           ' from IP: ' +
-//           parseIp(req) +
-//           ' but no short url found.'
-//       );
-//       res.status(404).json({ message: 'No short url found' });
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json('Server Error');
-//   }
-// };
-
 exports.getStats = async (req, res) => {
   try {
     const url = await Url.findOne(

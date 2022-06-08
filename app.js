@@ -54,11 +54,12 @@ var accessLogStream = rfs.createStream(generator, {
 // setup the logger
 app.use(morgan('combined', { stream: accessLogStream }));
 
-const linksController = require('./controllers/links_v1');
-const linksV2Controller = require('./controllers/links_v2');
+// Routes
+const v1Route = require('./routes/v1Route');
+const v2Route = require('./routes/v2Route');
+const fileRoute = require('./routes/fileRoute');
+const slackRoute = require('./routes/slackRoute');
 const authController = require('./controllers/auth');
-const fileHandler = require('./controllers/fileHandler');
-const { nextTick } = require('process');
 
 app.use(express.json());
 
@@ -102,10 +103,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.post('/api/auth/signup', authController.signup);
 
 // File Controller (route handlers).
-app.get('/api/files/downloads/:fileName', fileHandler.downloadFileController);
-app.post('/api/files/upload', fileHandler.upload);
-app.get('/api/files/downloads/', fileHandler.showDownloads);
-app.post('/api/files/uploadNew', fileHandler.uploadNew);
 app.route('/upload').post((req, res, next) => {
   const uploadPath = path.join(__dirname, './private/uploads/');
   req.pipe(req.busboy); // Pipe it trough busboy
@@ -138,38 +135,17 @@ app.route('/uploadTest').get((req, res) => {
 });
 // app.post('/api/files/test/', fileHandler.uploadWithShortenedUrl);
 
-// Controller v1 Routes
-app.get('/api/v1/links', cors(), linksController.getLinks);
-app.get('/api/v1/links/:shortUrl', cors(), linksController.getLink);
-app.patch(
-  '/api/v1/links/:shortUrl/incrementClicks',
-  cors(),
-  linksController.incrementClicks
-);
-app.post('/api/v1/links', cors(), linksController.createLink);
-app.delete('/api/v1/links/:id', cors(), linksController.deleteLink);
-app.put('/api/v1/links/:id', cors(), linksController.updateLink);
-app.patch(
-  '/api/v1/links/:shortUrl/expire',
-  cors(),
-  linksController.updateExpireAt
-);
-app.get('/api/v1/links/:shortUrl/stats', cors(), linksController.getStats);
-app.get(
-  '/api/v1/links/:shortUrl/stats/:stat',
-  cors(),
-  linksController.getSpecificStats
-);
-app.patch(
-  '/api/v1/links/:shortUrl/spend/:points',
-  cors(),
-  linksController.spendPoints
-);
-// Controller v2 Routes
-app.get('/api/v2/links', linksV2Controller.getLinks);
-app.post('/api/v2/links', linksV2Controller.createLink);
-app.delete('/api/v2/links/:id', linksV2Controller.deleteLink);
-app.put('/api/v2/links/:id', linksV2Controller.updateLink);
+// File Controller (route handlers).
+app.use('/api/files', fileRoute);
+
+// Links Controller (route handlers).
+app.use('/api/v1/links', v1Route);
+
+// Slack Controller (route handlers).
+app.use('/api/slack', slackRoute);
+
+// Links V2 Controller (route handlers).
+app.use('/api/v2/links', v2Route);
 
 if (env === 'development') {
   app.use(cors());

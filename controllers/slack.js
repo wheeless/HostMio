@@ -12,8 +12,7 @@ exports.slackWebhook = async (req, res) => {
   let studentEmails = req.body.email.split(' ');
   let message = req.body.message;
   let notify = req.body.notify.split(' ');
-  let messageNotify =
-    'The following students have received a message from the Communication Bot: ';
+  let messageNotify = `The following students have received the message "${message}" from the Communication Bot: `;
   try {
     const uri = `${process.env.SLACK_WEBHOOK_URL}`;
     const sleep = (milliseconds) => {
@@ -33,7 +32,7 @@ exports.slackWebhook = async (req, res) => {
       }
     };
     emailLoop(studentEmails);
-    const notifyStaff = async (studentEmails, notify) => {
+    const notifyStaff = async (studentEmails, notify, message) => {
       for (let i = 0; i < notify.length; i++) {
         await fetch(uri, {
           method: 'POST',

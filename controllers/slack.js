@@ -10,8 +10,10 @@ const fetch = (...args) =>
 
 exports.slackWebhook = async (req, res) => {
   let studentEmails = req.body.email.split(' ');
-  console.log(studentEmails);
   let message = req.body.message;
+  let notify = req.body.notify.split(' ');
+  let messageNotify =
+    'The following students have received a message from the Communication Bot: ';
   try {
     const uri = `${process.env.SLACK_WEBHOOK_URL}`;
 
@@ -28,6 +30,19 @@ exports.slackWebhook = async (req, res) => {
       }
     };
     emailLoop(studentEmails);
+    const notifyStaff = async (studentEmails, notify) => {
+      for (let i = 0; i < notify.length; i++) {
+        await fetch(uri, {
+          method: 'POST',
+          body: JSON.stringify({
+            email: notify[i],
+            message: messageNotify + studentEmails.join(', '),
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+    };
+    notifyStaff(studentEmails, notify);
     console.log('Sent to Slack');
     return res.status(200).json('Success!');
   } catch (err) {

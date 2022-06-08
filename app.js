@@ -5,6 +5,7 @@ var logger = require('morgan');
 const connectDB = require('./config/db');
 const trebbleConnect = require('./middleware/trebble');
 var cors = require('cors');
+var queue = require('express-queue');
 var app = express();
 require('dotenv').config({ path: '.env' });
 const { useTreblle } = require('treblle');
@@ -15,6 +16,8 @@ const fileUpload = require('express-fileupload');
 const uuid = require('uuid');
 const fs = require('fs');
 const busboy = require('connect-busboy');
+const rateLimit = require('express-rate-limit');
+var MongoStore = require('rate-limit-mongo');
 /**
  * Controllers (route handlers).
  */
@@ -41,6 +44,20 @@ const generator = (index) => {
 
   return `${month}-${day}-access.log`;
 };
+
+const limiter = rateLimit({
+  store: new MongoStore({
+    uri: `${process.env.MONGO_URI}`,
+    // should match windowMs
+    expireTimeMs: 15 * 60 * 1000,
+    errorHandler: console.error.bind(null, 'rate-limit-mongo'),
+    // see Configuration section for more options and details
+  }),
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
 
 // create a rotating write stream
 var accessLogStream = rfs.createStream(generator, {
@@ -82,7 +99,7 @@ app.use(
   fileUpload({
     createParentPath: true,
     limits: {
-      fileSize: 150 * 1024 * 1024 * 1024, //150MB max file(s) size
+      fileSize: 5 * 1024 * 1024 * 1024, //5MB max file(s) size
     },
   })
 );
@@ -92,7 +109,8 @@ app.use(
     highWaterMark: 2 * 1024 * 1024, // Set 2MiB buffer
   })
 ); // Insert the busboy middle-ware
-
+app.use(limiter);
+app.use(queue({ activeLimit: 5, queuedLimit: -1 }));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

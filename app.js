@@ -49,11 +49,12 @@ const limiter = rateLimit({
   store: new MongoStore({
     uri: `${process.env.MONGO_URI}`,
     // should match windowMs
-    expireTimeMs: 60 * 60 * 1000,
+    expireTimeMs: 1 * 60 * 1000,
     errorHandler: console.error.bind(null, 'rate-limit-mongo'),
     // see Configuration section for more options and details
   }),
-  windowMs: 60 * 60 * 1000, // 1 minute(s)
+  windowMs: 1 * 60 * 1000, // 1 minute(s)
+  message: 'Too many requests from this IP, please try again shortly. Thanks!',
   max: 60, // Limit each IP to 60 requests per `window` (here, per 1 minute(s))
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
@@ -160,11 +161,11 @@ app.use('/api/files', fileRoute);
 // Links Controller (route handlers).
 app.use('/api/v1/links', v1Route);
 
-// Slack Controller (route handlers).
-app.use('/api/slack', slackRoute);
-
 // Links V2 Controller (route handlers).
 app.use('/api/v2/links', v2Route);
+
+// Slack Controller (route handlers).
+app.use('/api/slack', slackRoute);
 
 if (env === 'development') {
   app.use(cors());

@@ -156,16 +156,16 @@ app.route('/uploadTest').get((req, res) => {
 // app.post('/api/files/test/', fileHandler.uploadWithShortenedUrl);
 
 // File Controller (route handlers).
-app.use('/api/files', fileRoute);
+app.use('/api/files', cors(), fileRoute);
 
 // Links Controller (route handlers).
-app.use('/api/v1/links', v1Route);
+app.use('/api/v1/links', cors(), v1Route);
 
 // Links V2 Controller (route handlers).
-app.use('/api/v2/links', v2Route);
+app.use('/api/v2/links', cors(), v2Route);
 
 // Slack Controller (route handlers).
-app.use('/api/slack', slackRoute);
+app.use('/api/slack', cors(), slackRoute);
 
 if (env === 'development') {
   app.use(cors());

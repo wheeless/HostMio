@@ -79,7 +79,8 @@ const slackRoute = require('./routes/slackRoute');
 const authController = require('./controllers/auth');
 
 app.use(express.json());
-
+app.set('trust proxy', 1);
+app.get('/ip', (request, response) => response.send(request.ip));
 // ATTACH TREBLLE WITH YOUR API KEY AND PROJECT ID
 if (process.env.TREBLLE_APIKEY && process.env.TREBLLE_PROJECTID) {
   useTreblle(app, {

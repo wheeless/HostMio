@@ -18,9 +18,8 @@ const fs = require('fs');
 const busboy = require('connect-busboy');
 const rateLimit = require('express-rate-limit');
 var MongoStore = require('rate-limit-mongo');
-/**
- * Controllers (route handlers).
- */
+
+app.use(queue({ activeLimit: 3, queuedLimit: 10 }));
 
 morgan(function (tokens, req, res) {
   return [
@@ -112,7 +111,7 @@ app.use(
   })
 ); // Insert the busboy middle-ware
 app.use(limiter);
-app.use(queue({ activeLimit: 5, queuedLimit: -1 }));
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

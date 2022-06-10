@@ -5,10 +5,12 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 2.x.x-alpha   | :white_check_mark: |
-| 1.4.1   | :white_check_mark: |
+| 2.x.x-alpha   | future release |
+| 1.5.x-beta    | :white_check_mark: |
+| 1.4.x   | :x:                |
 | 1.3.x   | :x:                |
-| 1.1.5   | :x:                |
+| 1.2.x   | :x:                |
+| 1.1.x   | :x:                |
 | 1.0.x   | :x:                |
 | < 1.0   | :x:                |
 

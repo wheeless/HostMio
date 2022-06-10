@@ -20,6 +20,7 @@
     "express-queue": "0.0.13",
     "express-rate-limit": "^6.4.0",
     "generate-api-key": "^1.0.0",
+    "lodash": "^4.17.21",
     "mongoose": "^6.0.12",
     "mongoose-paginate-v2": "^1.6.3",
     "morgan": "^1.10.0",

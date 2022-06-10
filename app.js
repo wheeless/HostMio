@@ -18,8 +18,9 @@ const fs = require('fs');
 const busboy = require('connect-busboy');
 const rateLimit = require('express-rate-limit');
 var MongoStore = require('rate-limit-mongo');
+var _ = require('lodash');
 
-app.use(queue({ activeLimit: 3, queuedLimit: 10 }));
+app.use(queue({ activeLimit: 1, queuedLimit: 3 }));
 
 morgan(function (tokens, req, res) {
   return [

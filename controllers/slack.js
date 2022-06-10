@@ -8,16 +8,22 @@ const busboy = require('connect-busboy');
 const { Console } = require('console');
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
+var _ = require('lodash');
 
 exports.slackWebhook = async (req, res) => {
   let studentEmails = req.body.email.split(' ');
   let message = req.body.message;
   let notifyBody = req.body.notify + ' kyle.wheeless@learningsource.com';
   let notify = notifyBody.split(' ');
+  let webhookArray = [
+    `${process.env.SLACK_WEBHOOK_URL}`,
+    `${process.env.SLACK_WEBHOOK_URL2}`,
+    `${process.env.SLACK_WEBHOOK_URL3}`,
+  ];
   console.log(notify);
   let messageNotify = `The following students have received the message "${message}" from the Communication Bot: `;
   try {
-    const uri = `${process.env.SLACK_WEBHOOK_URL}`;
+    const uri = _.sample(webhookArray);
     const sleep = (milliseconds) => {
       return new Promise((resolve) => setTimeout(resolve, milliseconds));
     };
@@ -33,10 +39,11 @@ exports.slackWebhook = async (req, res) => {
           headers: { 'Content-Type': 'application/json' },
         });
       }
+      notifyStaff(studentEmails, notify);
     };
     emailLoop(studentEmails);
     // console.log(response);
-    const notifyStaff = async (studentEmails, notify, message) => {
+    const notifyStaff = async (studentEmails, notify) => {
       for (let i = 0; i < notify.length; i++) {
         await fetch(uri, {
           method: 'POST',
@@ -48,8 +55,6 @@ exports.slackWebhook = async (req, res) => {
         });
       }
     };
-    notifyStaff(studentEmails, notify);
-    console.log('Sent to Slack');
     return res.status(200).json('Success!');
   } catch (err) {
     console.error(err);

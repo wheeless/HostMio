@@ -1,7 +1,6 @@
 const validUrl = require('valid-url');
 const shortid = require('shortid');
 const Url = require('../models/Url');
-const { json } = require('express/lib/response');
 // use $ and @ instead of - and _
 shortid.characters(
   '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-'
@@ -25,9 +24,6 @@ exports.getLink = async (req, res) => {
       console.log(
         'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
       );
-      // await url.clicks++;
-      // url.points = url.points + 25;
-      // await url.save();
       return await res.json(url);
     } else {
       console.log(

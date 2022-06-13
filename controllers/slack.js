@@ -1,11 +1,3 @@
-var express = require('express');
-var path = require('path');
-const fileUpload = require('express-fileupload');
-const uuid = require('uuid');
-const fs = require('fs');
-const UploadedFiles = require('../models/uploadedFiles');
-const busboy = require('connect-busboy');
-const { Console } = require('console');
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
 var _ = require('lodash');
@@ -20,7 +12,6 @@ exports.slackWebhook = async (req, res) => {
     `${process.env.SLACK_WEBHOOK_URL2}`,
     `${process.env.SLACK_WEBHOOK_URL3}`,
   ];
-  console.log(notify);
   let messageNotify = `The following students have received the message "${message}" from the Communication Bot: `;
   try {
     const uri = _.sample(webhookArray);
@@ -42,7 +33,6 @@ exports.slackWebhook = async (req, res) => {
       notifyStaff(studentEmails, notify);
     };
     emailLoop(studentEmails);
-    // console.log(response);
     const notifyStaff = async (studentEmails, notify) => {
       for (let i = 0; i < notify.length; i++) {
         await fetch(uri, {

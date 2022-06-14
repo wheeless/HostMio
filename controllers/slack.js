@@ -24,7 +24,7 @@ exports.slackWebhook = async (req, res) => {
           break;
         case '5':
           message =
-            'Hello there! We are reaching out regarding your attendance. Currently you are not meeting attendance policy and are five days out of attendances. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
+            'Hello there! We are reaching out regarding your attendance. Currently, you are not meeting the attendance policy and are five days out of attendance. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding, and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
           break;
         case '6':
           message =
@@ -74,19 +74,34 @@ exports.slackWebhook = async (req, res) => {
   switch (req.body.team) {
     case 'SWD':
       notifyBody =
-        'kyle.wheeless@learningsource.com joshua.butler@woz-u.com ashley.kyler@woz-u.com brittney.stuart@exetereducation.com';
+        'kyle.wheeless@learningsource.com joshua.butler@woz-u.com ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
+        ' ' +
+        req.body.notify;
       break;
     case 'DSO':
-      notifyBody = 'ashley.kyler@woz-u.com brittney.stuart@exetereducation.com';
+      notifyBody =
+        'ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
+        ' ' +
+        req.body.notify;
       break;
     case 'CSO':
-      notifyBody = 'ashley.kyler@woz-u.com brittney.stuart@exetereducation.com';
+      notifyBody =
+        'ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
+        ' ' +
+        req.body.notify;
       break;
     case 'MDO':
-      notifyBody = 'ashley.kyler@woz-u.com brittney.stuart@exetereducation.com';
+      notifyBody =
+        'ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
+        ' ' +
+        req.body.notify;
       break;
     default:
-      notifyBody = req.body.notify + ' kyle.wheeless@learningsource.com';
+      notifyBody =
+        req.body.notify +
+        ' kyle.wheeless@learningsource.com' +
+        ' ' +
+        req.body.notify;
       break;
   }
   let messageCombine = message + messageSignature;

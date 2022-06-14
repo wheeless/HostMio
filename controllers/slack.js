@@ -80,19 +80,19 @@ exports.slackWebhook = async (req, res) => {
       break;
     case 'DSO':
       notifyBody =
-        'ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
+        'nolan.hardeman@learningsource.com margaret.martinez@learningsource.com milton.gerardino@woz-u.com ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
         ' ' +
         req.body.notify;
       break;
     case 'CSO':
       notifyBody =
-        'ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
+        'shaun.manzano@woz-u.com joshua.butler@woz-u.com ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
         ' ' +
         req.body.notify;
       break;
     case 'MDO':
       notifyBody =
-        'ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
+        'jeremy.lee@woz-u.com kyle.wheeless@learningsource.com joshua.butler@woz-u.com ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
         ' ' +
         req.body.notify;
       break;
@@ -105,26 +105,31 @@ exports.slackWebhook = async (req, res) => {
       break;
   }
   let messageCombine = message + messageSignature;
-  // let notifyBody = req.body.notify + ' kyle.wheeless@learningsource.com';
   let notify = notifyBody.split(' ');
+
+  if (req.body.team) {
+    teamMessage = `Hello ${req.body.team} team member! `;
+  } else {
+    teamMessage = '';
+  }
+  let messageNotify = `${teamMessage}The following students have received the message "${messageCombine}" from the Communication Bot: `;
   let webhookArray = [
     `${process.env.SLACK_WEBHOOK_URL}`,
     `${process.env.SLACK_WEBHOOK_URL2}`,
     `${process.env.SLACK_WEBHOOK_URL3}`,
   ];
-  let messageNotify = `The following students have received the message "${messageCombine}" from the Communication Bot: `;
   try {
     const uri = _.sample(webhookArray);
     const sleep = (milliseconds) => {
       return new Promise((resolve) => setTimeout(resolve, milliseconds));
     };
     let emailLoop = async (studentEmails) => {
-      for (let pizza = 0; pizza < studentEmails.length; pizza++) {
+      for (let i = 0; i < studentEmails.length; i++) {
         await sleep(1000);
         response = await fetch(uri, {
           method: 'POST',
           body: JSON.stringify({
-            email: studentEmails[pizza],
+            email: studentEmails[i],
             message: messageCombine,
           }),
           headers: { 'Content-Type': 'application/json' },

@@ -112,7 +112,7 @@ exports.slackWebhook = async (req, res) => {
     `${process.env.SLACK_WEBHOOK_URL2}`,
     `${process.env.SLACK_WEBHOOK_URL3}`,
   ];
-  let messageNotify = `The following students have received the message "${message}" from the Communication Bot: `;
+  let messageNotify = `The following students have received the message "${messageCombine}" from the Communication Bot: `;
   try {
     const uri = _.sample(webhookArray);
     const sleep = (milliseconds) => {

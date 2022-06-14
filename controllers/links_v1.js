@@ -5,6 +5,20 @@ const Url = require('../models/Url');
 shortid.characters(
   '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-'
 );
+
+const myCustomLabels = {
+  docs: 'urls',
+};
+
+const options = {
+  sort: { date: -1 },
+  pagination: true,
+  customLabels: myCustomLabels,
+  collation: {
+    locale: 'en',
+  },
+};
+
 exports.getLink = async (req, res) => {
   try {
     const url = await Url.findOne(
@@ -16,23 +30,10 @@ exports.getLink = async (req, res) => {
         points: 1,
       }
     );
-    const parseIp = (req) =>
-      req.headers['x-forwarded-for']?.split(',').shift() ||
-      req.socket?.remoteAddress;
 
     if (url !== null) {
-      console.log(
-        'Pinged: GET /' + req.params.shortUrl + ' from IP: ' + parseIp(req)
-      );
-      return await res.json(url);
+      return res.json(url);
     } else {
-      console.log(
-        'Pinged: GET /' +
-          req.params.shortUrl +
-          ' from IP: ' +
-          parseIp(req) +
-          ' but no short url found.'
-      );
       res.status(404).json({ message: 'No short url found' });
     }
   } catch (err) {
@@ -81,26 +82,10 @@ exports.getStats = async (req, res) => {
         clicks: 1,
       }
     );
-    const parseIp = (req) =>
-      req.headers['x-forwarded-for']?.split(',').shift() ||
-      req.socket?.remoteAddress;
 
     if (url !== null) {
-      console.log(
-        'Pinged: GET /' +
-          req.params.shortUrl +
-          '/stats from IP: ' +
-          parseIp(req)
-      );
       return res.json(url);
     } else {
-      console.log(
-        'Pinged: GET /' +
-          req.params.shortUrl +
-          ' from IP: ' +
-          parseIp(req) +
-          ' but no short url found.'
-      );
       res.status(404).json({ message: 'No short url found' });
     }
   } catch (err) {
@@ -123,9 +108,6 @@ exports.getSpecificStats = async (req, res) => {
         clicks: 1,
       }
     );
-    const parseIp = (req) =>
-      req.headers['x-forwarded-for']?.split(',').shift() ||
-      req.socket?.remoteAddress;
 
     if (url !== null) {
       switch (req.params.stat) {
@@ -148,13 +130,6 @@ exports.getSpecificStats = async (req, res) => {
           res.status(400).json({ message: 'No stat by that name found', url });
       }
     } else {
-      console.log(
-        'Pinged: GET /' +
-          req.params.shortUrl +
-          ' from IP: ' +
-          parseIp(req) +
-          ' but no short url found.'
-      );
       res.status(404).json({ message: 'No short url found' });
     }
   } catch (err) {
@@ -164,6 +139,19 @@ exports.getSpecificStats = async (req, res) => {
 };
 
 exports.getLinks = (req, res) => {
+  // var findAll = Url.find();
+
+  // Url.paginate(
+  //   findAll,
+  //   { page: req.query.page || 1, limit: req.query.limit || 1000, options },
+  //   function (err, result) {
+  //     if (err) {
+  //       return res.status(500).json({ message: err.message });
+  //     } else {
+  //       return res.json(result);
+  //     }
+  //   }
+  // );
   Url.find()
     .then((url) => {
       res.json(url);
@@ -171,20 +159,10 @@ exports.getLinks = (req, res) => {
     .catch((err) => {
       res.status(500).json({ message: err.message });
     });
-  const parseIp = (req) =>
-    req.headers['x-forwarded-for']?.split(',').shift() ||
-    req.socket?.remoteAddress;
-
-  console.log('Pinged: GET /api/v1/links from IP: ' + parseIp(req));
 };
 
 exports.createLink = (req, res) => {
   let errors = [];
-  const parseIp = (req) =>
-    req.headers['x-forwarded-for']?.split(',').shift() ||
-    req.socket?.remoteAddress;
-
-  console.log('Pinged: POST /api/v1/links/ from IP: ' + parseIp(req));
 
   // Check if long url exists
   if (!req.body.longUrl) {
@@ -254,17 +232,6 @@ exports.createLink = (req, res) => {
 // });
 
 exports.updateExpireAt = (req, res) => {
-  const parseIp = (req) =>
-    req.headers['x-forwarded-for']?.split(',').shift() ||
-    req.socket?.remoteAddress;
-
-  console.log(
-    'Pinged: PATCH /api/v1/links/' +
-      req.params.shortUrl +
-      '/expire from IP: ' +
-      parseIp(req)
-  );
-
   Url.findOne({
     shortUrl: req.params.shortUrl,
   })
@@ -296,19 +263,6 @@ exports.updateExpireAt = (req, res) => {
 };
 
 exports.spendPoints = async (req, res) => {
-  const parseIp = (req) =>
-    req.headers['x-forwarded-for']?.split(',').shift() ||
-    req.socket?.remoteAddress;
-
-  console.log(
-    'Pinged: PATCH /api/v1/links/' +
-      req.params.shortUrl +
-      '/spend/' +
-      req.params.points +
-      ' from IP: ' +
-      parseIp(req)
-  );
-
   Url.findOne({
     shortUrl: req.params.shortUrl,
   })

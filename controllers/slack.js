@@ -108,7 +108,7 @@ exports.slackWebhook = async (req, res) => {
   let notify = notifyBody.split(' ');
 
   if (req.body.team) {
-    teamMessage = `Hello ${req.body.team} team member! `;
+    teamMessage = `Hello ${req.body.team} management member! `;
   } else {
     teamMessage = '';
   }

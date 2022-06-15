@@ -96,12 +96,12 @@ exports.slackWebhook = async (req, res) => {
         ' ' +
         req.body.notify;
       break;
+    case 'UAT':
+      notifyBody = 'kyle.wheeless@learningsource.com joshua.butler@woz-u.com';
+      ' ' + req.body.notify;
+      break;
     default:
-      notifyBody =
-        req.body.notify +
-        ' kyle.wheeless@learningsource.com' +
-        ' ' +
-        req.body.notify;
+      notifyBody = req.body.notify + ' kyle.wheeless@learningsource.com';
       break;
   }
   let messageCombine = message + messageSignature;

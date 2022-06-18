@@ -169,6 +169,7 @@ exports.createLink = (req, res) => {
     errors.push({
       text: 'Please add a long URL',
     });
+    res.status(400).json(errors);
   }
 
   // Check long url is valid
@@ -176,6 +177,7 @@ exports.createLink = (req, res) => {
     errors.push({
       text: 'Invalid url',
     });
+    res.status(400).json(errors);
   }
 
   // Check if short url is being set

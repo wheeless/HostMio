@@ -182,7 +182,11 @@ if (env === 'development') {
       if (allowedOriginsArray.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
-        callback(new Error('Where TF is your access token?'));
+        callback(
+          new Error(
+            'Not an allowed origin. Please contact the service provider.'
+          )
+        );
       }
     },
   };

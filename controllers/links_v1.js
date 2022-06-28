@@ -1,6 +1,7 @@
 const validUrl = require('valid-url');
 const shortid = require('shortid');
 const Url = require('../models/Url');
+const { Mongoose } = require('mongoose');
 // use $ and @ instead of - and _
 shortid.characters(
   '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-'
@@ -15,11 +16,18 @@ exports.getLink = async (req, res) => {
         longUrl: 1,
         clicks: 1,
         points: 1,
+        deactivated: 1,
       }
     );
 
     if (url !== null) {
-      return res.json(url);
+      if (url.deactivated) {
+        res
+          .status(400)
+          .json({ message: 'This shortened url has been deactivated' });
+      } else {
+        return res.json(url);
+      }
     } else {
       res.status(404).json({ message: 'No short url found' });
     }
@@ -113,6 +121,9 @@ exports.getSpecificStats = async (req, res) => {
         case 'expireAt':
           res.json([url.shortUrl, url.expireAt]);
           break;
+        case 'deactivated':
+          res.json([url.shortUrl, url.deactivated]);
+          break;
         default:
           res.status(400).json({ message: 'No stat by that name found', url });
       }
@@ -136,40 +147,40 @@ const options = {
     locale: 'en',
   },
 };
-exports.getLinks = (req, res) => {
-  // var findAll = Url.find();
+exports.getLinks = async (req, res) => {
+  try {
+    // var findAll = Url.find();
 
-  // Url.paginate(
-  //   findAll,
-  //   {
-  //     page: req.query.page || 1,
-  //     limit: req.query.limit || 1000,
-  //     customLabels: myCustomLabels,
-  //     pagination: true,
-  //     options,
-  //   },
-  //   function (err, result) {
-  //     if (err) {
-  //       return res.status(500).json({ message: err.message });
-  //     } else {
-  //       return res.json(result);
-  //     }
-  //   }
-  // );
-  // Url.find({
-  //   $or: [
-  //     {
-  //       deactivated: 0,
-  //     },
-  //   ],
-  // })
-  Url.find()
-    .then((url) => {
-      res.json(url);
+    // Url.paginate(
+    //   findAll,
+    //   {
+    //     page: req.query.page || 1,
+    //     limit: req.query.limit || 1000,
+    //     customLabels: myCustomLabels,
+    //     pagination: true,
+    //     options,
+    //   },
+    //   function (err, result) {
+    //     if (err) {
+    //       return res.status(500).json({ message: err.message });
+    //     } else {
+    //       return res.json(result);
+    //     }
+    //   }
+    // );
+    Url.find({
+      deactivated: 0,
     })
-    .catch((err) => {
-      res.status(500).json({ message: err.message });
-    });
+      .then((url) => {
+        res.json(url);
+      })
+      .catch((err) => {
+        res.status(500).json({ message: err.message });
+      });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('Server Error');
+  }
 };
 
 exports.createLink = (req, res) => {

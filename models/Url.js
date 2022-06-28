@@ -23,6 +23,10 @@ const urlSchema = new mongoose.Schema({
     required: true,
     default: 1000,
   },
+  deactivated: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 urlSchema.plugin(mongoosePaginate);

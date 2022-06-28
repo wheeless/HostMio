@@ -137,32 +137,32 @@ const options = {
   },
 };
 exports.getLinks = (req, res) => {
-  var findAll = Url.find();
+  // var findAll = Url.find();
 
-  Url.paginate(
-    findAll,
-    {
-      page: req.query.page || 1,
-      limit: req.query.limit || 1000,
-      customLabels: myCustomLabels,
-      pagination: true,
-      options,
-    },
-    function (err, result) {
-      if (err) {
-        return res.status(500).json({ message: err.message });
-      } else {
-        return res.json(result);
-      }
-    }
-  );
-  // Url.find()
-  //   .then((url) => {
-  //     res.json(url);
-  //   })
-  //   .catch((err) => {
-  //     res.status(500).json({ message: err.message });
-  //   });
+  // Url.paginate(
+  //   findAll,
+  //   {
+  //     page: req.query.page || 1,
+  //     limit: req.query.limit || 1000,
+  //     customLabels: myCustomLabels,
+  //     pagination: true,
+  //     options,
+  //   },
+  //   function (err, result) {
+  //     if (err) {
+  //       return res.status(500).json({ message: err.message });
+  //     } else {
+  //       return res.json(result);
+  //     }
+  //   }
+  // );
+  Url.find()
+    .then((url) => {
+      res.json(url);
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.message });
+    });
 };
 
 exports.createLink = (req, res) => {
@@ -320,9 +320,10 @@ exports.updateLink = (req, res) => {
 };
 
 exports.deleteLink = (req, res) => {
-  Url.findByIdAndRemove(req.params.id)
+  Url.findById(req.params.id)
     .then((url) => {
-      res.json(url + ' deleted');
+      url.deactivated = true;
+      url.save().then(res.json(url.shortUrl + ' deactivated'));
     })
     .catch((err) => {
       res.status(500).json({ message: err.message });

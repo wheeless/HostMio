@@ -6,19 +6,6 @@ shortid.characters(
   '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-'
 );
 
-const myCustomLabels = {
-  docs: 'urls',
-};
-
-const options = {
-  sort: { date: -1 },
-  pagination: true,
-  customLabels: myCustomLabels,
-  collation: {
-    locale: 'en',
-  },
-};
-
 exports.getLink = async (req, res) => {
   try {
     const url = await Url.findOne(
@@ -137,28 +124,45 @@ exports.getSpecificStats = async (req, res) => {
     res.status(500).json('Server Error');
   }
 };
+const myCustomLabels = {
+  docs: 'urls',
+};
 
+const options = {
+  sort: { date: -1 },
+  pagination: true,
+  customLabels: myCustomLabels,
+  collation: {
+    locale: 'en',
+  },
+};
 exports.getLinks = (req, res) => {
-  // var findAll = Url.find();
+  var findAll = Url.find();
 
-  // Url.paginate(
-  //   findAll,
-  //   { page: req.query.page || 1, limit: req.query.limit || 1000, options },
-  //   function (err, result) {
-  //     if (err) {
-  //       return res.status(500).json({ message: err.message });
-  //     } else {
-  //       return res.json(result);
-  //     }
-  //   }
-  // );
-  Url.find()
-    .then((url) => {
-      res.json(url);
-    })
-    .catch((err) => {
-      res.status(500).json({ message: err.message });
-    });
+  Url.paginate(
+    findAll,
+    {
+      page: req.query.page || 1,
+      limit: req.query.limit || 1000,
+      customLabels: myCustomLabels,
+      pagination: true,
+      options,
+    },
+    function (err, result) {
+      if (err) {
+        return res.status(500).json({ message: err.message });
+      } else {
+        return res.json(result);
+      }
+    }
+  );
+  // Url.find()
+  //   .then((url) => {
+  //     res.json(url);
+  //   })
+  //   .catch((err) => {
+  //     res.status(500).json({ message: err.message });
+  //   });
 };
 
 exports.createLink = (req, res) => {

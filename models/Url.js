@@ -38,6 +38,6 @@ const options = {
   },
 };
 
-urlModel.paginate({}, options).then({});
+urlModel.paginate({}).then({});
 
 module.exports = urlModel;

@@ -156,6 +156,13 @@ exports.getLinks = (req, res) => {
   //     }
   //   }
   // );
+  // Url.find({
+  //   $or: [
+  //     {
+  //       deactivated: 0,
+  //     },
+  //   ],
+  // })
   Url.find()
     .then((url) => {
       res.json(url);

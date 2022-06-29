@@ -75,6 +75,7 @@ exports.getStats = async (req, res) => {
         points: 1,
         date: 1,
         clicks: 1,
+        deactivated: 1,
       }
     );
 

@@ -378,7 +378,15 @@ exports.reactivateLink = (req, res) => {
     .then((url) => {
       url.deactivated = false;
       url.expireAt = url.oldExpireAt;
-      url.save().then(res.json(url.shortUrl + ' reactivated'));
+      url
+        .save()
+        .then(
+          res.json(
+            url.shortUrl +
+              ' has been reactivated and the expire date has been reset to ' +
+              url.expireAt
+          )
+        );
     })
     .catch((err) => {
       res.status(500).json({
@@ -401,7 +409,7 @@ exports.deactivateLink = (req, res) => {
           .then(
             res.json(
               url.shortUrl +
-                ' deactivated, and will expire in 7 days. Expire Date:' +
+                ' has been deactivated, and will expire in 7 days. Expire Date:' +
                 url.expireAt
             )
           );

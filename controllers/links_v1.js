@@ -122,7 +122,7 @@ exports.getSpecificStats = async (req, res) => {
         case 'expireAt':
           res.json([url.shortUrl, url.expireAt]);
           break;
-        case 'deactivated':
+        case 'active':
           res.json([url.shortUrl, url.deactivated]);
           break;
         default:

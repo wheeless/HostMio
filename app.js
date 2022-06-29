@@ -53,6 +53,7 @@ const limiter = rateLimit({
     errorHandler: console.error.bind(null, 'rate-limit-mongo'),
     // see Configuration section for more options and details
   }),
+  statusCode: 429,
   windowMs: 1 * 60 * 1000, // 1 minute(s)
   message: 'Too many requests from this IP, please try again shortly. Thanks!',
   max: 60, // Limit each IP to 60 requests per `window` (here, per 1 minute(s))

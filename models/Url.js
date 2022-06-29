@@ -9,6 +9,9 @@ const urlSchema = new mongoose.Schema({
     type: Date,
     default: () => new Date(+new Date() + 30 * 24 * 60 * 60 * 1000),
   },
+  oldExpireAt: {
+    type: Date,
+  },
   expireRefresh: {
     type: Boolean,
     default: false,

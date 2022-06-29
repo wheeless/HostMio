@@ -285,6 +285,10 @@ exports.updateExpireAt = (req, res) => {
             message:
               'Expire date already refreshed. Please use points to extend the time.',
           });
+        } else if (url.deactivated) {
+          res.status(403).json({
+            message: 'Link is deactivated, you cannot extend the time.',
+          });
         } else {
           if (!req.body.expireAt) {
             url.expireAt = +new Date(url.expireAt) + 30 * 24 * 60 * 60 * 1000;
@@ -373,6 +377,7 @@ exports.reactivateLink = (req, res) => {
   Url.findById(req.params.id)
     .then((url) => {
       url.deactivated = false;
+      url.expireAt = url.oldExpireAt;
       url.save().then(res.json(url.shortUrl + ' reactivated'));
     })
     .catch((err) => {
@@ -385,8 +390,22 @@ exports.reactivateLink = (req, res) => {
 exports.deactivateLink = (req, res) => {
   Url.findById(req.params.id)
     .then((url) => {
-      url.deactivated = true;
-      url.save().then(res.json(url.shortUrl + ' deactivated'));
+      if (url.deactivated) {
+        res.json(url.shortUrl + ' is already deactivated');
+      } else {
+        url.deactivated = true;
+        url.oldExpireAt = url.expireAt;
+        url.expireAt = +new Date() + 7 * 24 * 60 * 60 * 1000;
+        url
+          .save()
+          .then(
+            res.json(
+              url.shortUrl +
+                ' deactivated, and will expire in 7 days. Expire Date:' +
+                url.expireAt
+            )
+          );
+      }
     })
     .catch((err) => {
       res.status(500).json({

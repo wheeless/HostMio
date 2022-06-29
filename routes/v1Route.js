@@ -5,6 +5,7 @@ var cors = require('cors');
 
 // Controller v1 Routes
 router.get('/', cors(), linksController.getLinks);
+router.get('/deactivated', cors(), linksController.getDeactivatedLinks);
 router.get('/:shortUrl', cors(), linksController.getLink);
 router.patch(
   '/:shortUrl/incrementClicks',
@@ -12,7 +13,9 @@ router.patch(
   linksController.incrementClicks
 );
 router.post('/', cors(), linksController.createLink);
-router.delete('/:id', cors(), linksController.deleteLink);
+router.delete('/:id', cors(), linksController.deactivateLink);
+router.patch('/:id/reactivate', cors(), linksController.reactivateLink);
+router.delete('/:id/delete', cors(), linksController.deleteLink);
 router.put('/:id', cors(), linksController.updateLink);
 router.patch('/:shortUrl/expire', cors(), linksController.updateExpireAt);
 router.get('/:shortUrl/stats', cors(), linksController.getStats);

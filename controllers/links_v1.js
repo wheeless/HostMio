@@ -183,6 +183,23 @@ exports.getLinks = async (req, res) => {
   }
 };
 
+exports.getDeactivatedLinks = async (req, res) => {
+  try {
+    Url.find({
+      deactivated: 1,
+    })
+      .then((url) => {
+        res.json(url);
+      })
+      .catch((err) => {
+        res.status(500).json({ message: err.message });
+      });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json('Server Error');
+  }
+};
+
 exports.createLink = (req, res) => {
   let errors = [];
 
@@ -338,6 +355,28 @@ exports.updateLink = (req, res) => {
 };
 
 exports.deleteLink = (req, res) => {
+  Url.findById(req.params.id)
+    .then((url) => {
+      url.deactivated = true;
+      url.save().then(res.json(url.shortUrl + ' deleted'));
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.message });
+    });
+};
+
+exports.reactivateLink = (req, res) => {
+  Url.findById(req.params.id)
+    .then((url) => {
+      url.deactivated = false;
+      url.save().then(res.json(url.shortUrl + ' reactivated'));
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.message });
+    });
+};
+
+exports.deactivateLink = (req, res) => {
   Url.findById(req.params.id)
     .then((url) => {
       url.deactivated = true;

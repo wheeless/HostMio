@@ -33,7 +33,7 @@ exports.getLink = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json('Server Error');
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
@@ -59,7 +59,7 @@ exports.incrementClicks = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json('Server Error');
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
@@ -86,7 +86,7 @@ exports.getStats = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json('Server Error');
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
@@ -133,7 +133,7 @@ exports.getSpecificStats = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json('Server Error');
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 const myCustomLabels = {
@@ -180,7 +180,7 @@ exports.getLinks = async (req, res) => {
       });
   } catch (err) {
     console.error(err);
-    res.status(500).json('Server Error');
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
@@ -197,7 +197,7 @@ exports.getDeactivatedLinks = async (req, res) => {
       });
   } catch (err) {
     console.error(err);
-    res.status(500).json('Server Error');
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 

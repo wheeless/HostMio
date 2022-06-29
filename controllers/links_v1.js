@@ -102,6 +102,7 @@ exports.getSpecificStats = async (req, res) => {
         points: 1,
         date: 1,
         clicks: 1,
+        deactivated: 1,
       }
     );
 
@@ -123,7 +124,7 @@ exports.getSpecificStats = async (req, res) => {
           res.json([url.shortUrl, url.expireAt]);
           break;
         case 'active':
-          res.json([url.shortUrl, url.deactivated]);
+          res.json([url.shortUrl, 'Deactivated: ' + url.deactivated]);
           break;
         default:
           res.status(400).json({ message: 'No stat by that name found', url });
@@ -362,7 +363,9 @@ exports.deleteLink = (req, res) => {
       url.save().then(res.json(url.shortUrl + ' deleted'));
     })
     .catch((err) => {
-      res.status(500).json({ message: err.message });
+      res.status(500).json({
+        message: "Url does not exist, or you didn't use the ID",
+      });
     });
 };
 
@@ -373,7 +376,9 @@ exports.reactivateLink = (req, res) => {
       url.save().then(res.json(url.shortUrl + ' reactivated'));
     })
     .catch((err) => {
-      res.status(500).json({ message: err.message });
+      res.status(500).json({
+        message: "Url does not exist, or you didn't use the ID",
+      });
     });
 };
 
@@ -384,6 +389,8 @@ exports.deactivateLink = (req, res) => {
       url.save().then(res.json(url.shortUrl + ' deactivated'));
     })
     .catch((err) => {
-      res.status(500).json({ message: err.message });
+      res.status(500).json({
+        message: "Url does not exist, or you didn't use the ID",
+      });
     });
 };

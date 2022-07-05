@@ -48,7 +48,7 @@ exports.slackWebhook = async (req, res) => {
           break;
         default:
           message =
-            'Hello there! We are reaching out regarding your attendance. Currently you are not meeting attendance policy. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
+            'Hello there! We are reaching out regarding your attendance. Currently, you are not meeting the attendance policy. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding, and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
           break;
       }
       break;

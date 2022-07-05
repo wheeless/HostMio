@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 const fileUpload = require('express-fileupload');
 const uuid = require('uuid');
+var mime = require('mime');
 const fs = require('fs');
 const UploadedFiles = require('../models/uploadedFiles');
 const busboy = require('connect-busboy');
@@ -71,15 +72,32 @@ exports.downloadFileController = async = (req, res) => {
     // }
 
     const fileCheck = './public/downloads/' + fileName;
+    var mimetype = mime.lookup(fileCheck);
     //Async method
+
     fs.access(fileCheck, fs.F_OK, (err) => {
       if (err) {
         console.error(err);
         res.send('File not found');
       } else {
-        res.download(
-          path.join(__dirname, '../public/downloads', `${fileName}`)
+        res.setHeader(
+          'Content-disposition',
+          'attachment; filename=' + fileName
         );
+        res.setHeader('Content-type', mimetype);
+
+        res.download(fileCheck, function (err) {
+          if (err) {
+            console.error(err);
+            console.error(err.message);
+            res.end();
+            // res.status(500).send({
+            //   message: 'Error downloading file',
+            // });
+          } else {
+            console.log('Sent:', fileName);
+          }
+        });
       }
     });
   } catch (err) {
@@ -114,32 +132,32 @@ exports.showDownloads = async (req, res) => {
   }
 };
 
-exports.uploadWithShortenedUrl = async (req, res) => {
-  try {
-    let avatar = req.files.avatar;
-    const newFileName = uuid.v4() + '-' + avatar.name;
-    const { downloadable, fileName, size } = req.body;
-    const fileUploader = new UploadedFilesSchema({
-      fileName,
-      size,
-      downloadable,
-      uploadedUrl,
-    });
+// exports.uploadWithShortenedUrl = async (req, res) => {
+//   try {
+//     let avatar = req.files.avatar;
+//     const newFileName = uuid.v4() + '-' + avatar.name;
+//     const { downloadable, fileName, size } = req.body;
+//     const fileUploader = new UploadedFilesSchema({
+//       fileName,
+//       size,
+//       downloadable,
+//       uploadedUrl,
+//     });
 
-    avatar.mv(`./public/uploads/${newFileName}`, function (err) {
-      if (err) {
-        return res.status(500).send(err);
-      }
-      res.status(200).send({
-        message: 'File uploaded!',
-        fileName: newFileName,
-      });
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json('Server Error');
-  }
-};
+//     avatar.mv(`./public/uploads/${newFileName}`, function (err) {
+//       if (err) {
+//         return res.status(500).send(err);
+//       }
+//       res.status(200).send({
+//         message: 'File uploaded!',
+//         fileName: newFileName,
+//       });
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json('Server Error');
+//   }
+// };
 
 exports.upload = async = (req, res) => {
   try {
@@ -182,28 +200,28 @@ exports.upload = async = (req, res) => {
   }
 };
 
-exports.uploadNew = async (req, res) => {
-  try {
-    const uploadPath = path.join(__dirname, './private/uploads/');
+// exports.uploadNew = async (req, res) => {
+//   try {
+//     const uploadPath = path.join(__dirname, './private/uploads/');
 
-    req.pipe(req.busboy); // Pipe it trough busboy
+//     req.pipe(req.busboy); // Pipe it trough busboy
 
-    req.busboy.on('file', (fieldname, file, filename) => {
-      console.log(`Upload of '${filename}' started`);
+//     req.busboy.on('file', (fieldname, file, filename) => {
+//       console.log(`Upload of '${filename}' started`);
 
-      // Create a write stream of the new file
-      const fstream = fs.createWriteStream(path.join(uploadPath, filename));
-      // Pipe it trough
-      file.pipe(fstream);
+//       // Create a write stream of the new file
+//       const fstream = fs.createWriteStream(path.join(uploadPath, filename));
+//       // Pipe it trough
+//       file.pipe(fstream);
 
-      // On finish of the upload
-      fstream.on('close', () => {
-        console.log(`Upload of '${filename}' finished`);
-        res.redirect('back');
-      });
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json('Server Error');
-  }
-};
+//       // On finish of the upload
+//       fstream.on('close', () => {
+//         console.log(`Upload of '${filename}' finished`);
+//         res.redirect('back');
+//       });
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json('Server Error');
+//   }
+// };

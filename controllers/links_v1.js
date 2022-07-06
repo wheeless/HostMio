@@ -76,6 +76,7 @@ exports.getStats = async (req, res) => {
         date: 1,
         clicks: 1,
         deactivated: 1,
+        doesNotExpire: 1,
       }
     );
 
@@ -103,6 +104,7 @@ exports.getSpecificStats = async (req, res) => {
         date: 1,
         clicks: 1,
         deactivated: 1,
+        doesNotExpire: 1,
       }
     );
 
@@ -123,6 +125,8 @@ exports.getSpecificStats = async (req, res) => {
         case 'expireAt':
           res.json([url.shortUrl, url.expireAt]);
           break;
+        case 'doesNotExpire':
+          res.json([url.shortUrl, url.doesNotExpire]);
         case 'active':
           res.json([url.shortUrl, 'Deactivated: ' + url.deactivated]);
           break;
@@ -228,6 +232,12 @@ exports.createLink = (req, res) => {
     shortUrlVar = shortid.generate();
   }
 
+  if (req.body.doesNotExpire) {
+    expireAtVar = new Date(+new Date() + 1000 * 12 * 30 * 24 * 60 * 60 * 1000);
+  } else {
+    expireAtVar = req.body.expireAt;
+  }
+
   // Check if errors array is empty
   Url.findOne({
     $or: [
@@ -235,33 +245,38 @@ exports.createLink = (req, res) => {
         shortUrl: req.body.shortUrl,
       },
     ],
-  }).then((url) => {
-    if (url) {
-      res.json('ShortURL already exists');
-    } else {
-      // Check if errors array is empty
-      if (errors.length > 0) {
-        res.json({
-          errors: errors,
-          longUrl: req.body.longUrl,
-          shortUrl: req.body.shortUrl,
-          expireAt: req.body.expireAt,
-        });
+  })
+    .then((url) => {
+      if (url) {
+        res.json('ShortURL already exists');
       } else {
-        // If no errors
-        const newUrl = {
-          // Create new url
-          longUrl: req.body.longUrl, // Long url
-          shortUrl: shortUrlVar, // Short url
-          date: new Date(), // Date
-          expireAt: req.body.expireAt, // Expire at
-        };
-        new Url(newUrl).save().then((url) => {
-          res.status(200).json(url);
-        }); // Save new url
+        // Check if errors array is empty
+        if (errors.length > 0) {
+          res.json({
+            errors: errors,
+            longUrl: req.body.longUrl,
+            shortUrl: req.body.shortUrl,
+            expireAt: req.body.expireAt,
+          });
+        } else {
+          // If no errors
+          const newUrl = {
+            // Create new url
+            longUrl: req.body.longUrl, // Long url
+            shortUrl: shortUrlVar, // Short url
+            date: new Date(), // Date
+            doesNotExpire: req.body.doesNotExpire, // Does not expire
+            expireAt: expireAtVar, // Expire at
+          };
+          new Url(newUrl).save().then((url) => {
+            res.status(200).json(url);
+          }); // Save new url
+        } // end else
       } // end else
-    } // end else
-  });
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.message });
+    }); // end catch
 };
 
 // const user = await userSch.findById(req.params.id, {
@@ -347,7 +362,7 @@ exports.updateLink = (req, res) => {
       url.shortUrl = req.body.shortUrl;
       url.date = new Date();
       if (!req.body.expireAt) {
-        url.expireAt = Date.now() + 30 * 24 * 60 * 60 * 1000;
+        url.expireAt = new Date(+new Date() + 30 * 24 * 60 * 60 * 1000);
       } else {
         url.expireAt = req.body.expireAt;
       }
@@ -368,7 +383,7 @@ exports.deleteLink = (req, res) => {
     })
     .catch((err) => {
       res.status(500).json({
-        message: "Url does not exist, or you didn't use the ID",
+        message: "Url does not exist, or you didn't use the ID: " + err.message,
       });
     });
 };
@@ -376,21 +391,25 @@ exports.deleteLink = (req, res) => {
 exports.reactivateLink = (req, res) => {
   Url.findById(req.params.id)
     .then((url) => {
-      url.deactivated = false;
-      url.expireAt = url.oldExpireAt;
-      url
-        .save()
-        .then(
-          res.json(
-            url.shortUrl +
-              ' has been reactivated and the expire date has been reset to ' +
-              url.expireAt
-          )
-        );
+      if (url.deactivated === true) {
+        url.deactivated = false;
+        url.expireAt = url.oldExpireAt;
+        url
+          .save()
+          .then(
+            res.json(
+              url.shortUrl +
+                ' has been reactivated and the expire date has been reset to ' +
+                url.expireAt
+            )
+          );
+      } else {
+        res.json(url.shortUrl + ' link is already active');
+      }
     })
     .catch((err) => {
       res.status(500).json({
-        message: "Url does not exist, or you didn't use the ID",
+        message: "Url does not exist, or you didn't use the proper ID",
       });
     });
 };

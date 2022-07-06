@@ -30,6 +30,10 @@ const urlSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  doesNotExpire: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 urlSchema.plugin(mongoosePaginate);

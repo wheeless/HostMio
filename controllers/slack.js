@@ -2,7 +2,27 @@ const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
 var _ = require('lodash');
 
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+console.log();
 exports.slackWebhook = async (req, res) => {
+  switch (req.body.sender) {
+    case 'Josh':
+      var sender = 'joshua.butler@learningsource.com';
+      var emailSignature =
+        'Joshua Butler <span style="color:#27ABE3">|</span> Senior Mentor';
+      var emailContact = `<span style="color:#27ABE3">T:</span> 512.770.9459 <span style="color:#27ABE3">E:</span> ${sender}`;
+      break;
+    case 'Kyle':
+      var sender = 'kyle.wheeless@learningsource.com';
+      var emailSignature =
+        'Kyle Wheeless <span style="color:#27ABE3">|</span> Senior Mentor';
+      var emailContact = `<span style="color:#27ABE3">T:</span> 512.438.1910 <span style="color:#27ABE3">E:</span> ${sender}`;
+      break;
+    default:
+      var sender = 'kyle.wheeless@learningsource.com';
+  }
   let studentEmails = req.body.email.split(' ');
   // let message = req.body.message;
   let messageSignature = req.body.signature;
@@ -74,30 +94,31 @@ exports.slackWebhook = async (req, res) => {
   switch (req.body.team) {
     case 'SWD':
       notifyBody =
-        'kyle.wheeless@learningsource.com joshua.butler@woz-u.com ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
+        'kyle.wheeless@learningsource.com joshua.butler@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com' +
         ' ' +
         req.body.notify;
       break;
     case 'DSO':
       notifyBody =
-        'nolan.hardeman@learningsource.com margaret.martinez@learningsource.com milton.gerardino@woz-u.com ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
+        'nolan.hardeman@learningsource.com margaret.martinez@learningsource.com milton.gerardino@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com' +
         ' ' +
         req.body.notify;
       break;
     case 'CSO':
       notifyBody =
-        'shaun.manzano@woz-u.com joshua.butler@woz-u.com ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
+        'shaun.manzano@learningsource.com joshua.butler@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com' +
         ' ' +
         req.body.notify;
       break;
     case 'MDO':
       notifyBody =
-        'jeremy.lee@woz-u.com kyle.wheeless@learningsource.com joshua.butler@woz-u.com ashley.kyler@woz-u.com brittney.stuart@exetereducation.com' +
+        'kyle.wheeless@learningsource.com joshua.butler@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com' +
         ' ' +
         req.body.notify;
       break;
     case 'UAT':
-      notifyBody = 'kyle.wheeless@learningsource.com joshua.butler@woz-u.com';
+      notifyBody =
+        'kyle.wheeless@learningsource.com joshua.butler@learningsource.com';
       ' ' + req.body.notify;
       break;
     default:
@@ -150,6 +171,25 @@ exports.slackWebhook = async (req, res) => {
         });
       }
     };
+    const msg = {
+      to: 'kyle.wheeless@scitexas.edu', // Change to your recipient
+      from: sender, // Change to your verified sender
+      subject: req.body.subject,
+      cc: notifyBody,
+      bcc: studentEmails,
+      html: `<p>${message}</p><br><p><img src="https://api.avernix.com/api/files/downloads/94dacf92-3a76-45ac-a007-16efaa80b622-Outlook-14n4hiys.png"> <br> <img src="https://api.avernix.com/api/files/downloads/8c694a99-82b0-4637-b304-05f10411f05c-Outlook-vic154nn.png"> <br> ${emailSignature}<br>1701 Directors Blvd <span style="color:#27ABE3">|</span>  Suite 800 <span style="color:#27ABE3">|</span>  Austin, TX 78744<br>${emailContact}</p>`,
+    };
+    (async () => {
+      try {
+        await sgMail.send(msg);
+      } catch (error) {
+        console.error(error);
+
+        if (error.response) {
+          console.error(error.response.body);
+        }
+      }
+    })();
     return res.status(200).json('Success!');
   } catch (err) {
     console.error(err);

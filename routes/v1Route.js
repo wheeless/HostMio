@@ -20,9 +20,5 @@ router.put('/:id', cors(), linksController.updateLink);
 router.patch('/:shortUrl/expire', cors(), linksController.updateExpireAt);
 router.get('/:shortUrl/stats', cors(), linksController.getStats);
 router.get('/:shortUrl/stats/:stat', cors(), linksController.getSpecificStats);
-router.patch(
-  '/api/v1/links/:shortUrl/spend/:points',
-  cors(),
-  linksController.spendPoints
-);
+router.patch('/:shortUrl/spend/:points', cors(), linksController.spendPoints);
 module.exports = router;

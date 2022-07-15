@@ -35,36 +35,19 @@ exports.slackWebhook = async (req, res) => {
     case 'LDA':
       switch (req.body.daysLDA) {
         case '3':
-          message =
-            'Hello there! We are reaching out regarding your attendance. Currently you are not meeting attendance policy and are three days out of attendances. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
-          break;
         case '4':
-          message =
-            'Hello there! We are reaching out regarding your attendance. Currently you are not meeting attendance policy and are four days out of attendances. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
-          break;
         case '5':
-          message =
-            'Hello there! We are reaching out regarding your attendance. Currently, you are not meeting the attendance policy and are five days out of attendance. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding, and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
-          break;
         case '6':
-          message =
-            'Hello there! We are reaching out regarding your attendance. Currently you are not meeting attendance policy and are six days out of attendances. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
+          message = `Hello there! We are reaching out regarding your attendance. Currently you are not meeting the  attendance policy and are ${req.body.daysLDA} days out of attendance. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!`;
           break;
         case '7':
-          message =
-            'Hello there! We are reaching out regarding your attendance. Currently you are not meeting attendance policy and are seven days out of attendances and run the risk of being removed from the program after ten days. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
-          break;
         case '8':
-          message =
-            'Hello there! We are reaching out regarding your attendance. Currently you are not meeting attendance policy and are eight days out of attendances and run the risk of being removed from the program after ten days. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
-          break;
         case '9':
-          message =
-            'Hello there! We are reaching out regarding your attendance. Currently you are not meeting attendance policy and are nine days out of attendances and run the risk of being removed from the program after ten days. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
+          message = `Hello there! We are reaching out regarding your attendance. Currently you are not meeting the attendance policy and are ${req.body.daysLDA} days out of attendance and run the risk of being removed from the program after ten days. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!`;
           break;
         case '10':
           message =
-            'Hello there! We are reaching out regarding your attendance. Currently you are not meeting attendance policy and are ten days out of attendances, today is your last day to access your course before being removed from the program. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
+            'Hello there! We are reaching out regarding your attendance. Currently you are not meeting the attendance policy and are ten days out of attendance, today is your last day to access your course before being removed from the program. To remedy this please take time to log into your course and begin progressing. To help ensure success, spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!';
           break;
         default:
           message =
@@ -106,7 +89,7 @@ exports.slackWebhook = async (req, res) => {
       break;
     case 'CSO':
       notifyBody =
-        'shaun.manzano@learningsource.com joshua.butler@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com' +
+        'shaun.manzano@learningsource.com kyle.wheeless@learningsource.com joshua.butler@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com' +
         ' ' +
         req.body.notify;
       break;
@@ -118,11 +101,12 @@ exports.slackWebhook = async (req, res) => {
       break;
     case 'UAT':
       notifyBody =
-        'kyle.wheeless@learningsource.com joshua.butler@learningsource.com';
-      ' ' + req.body.notify;
+        'kyle.wheeless@learningsource.com joshua.butler@learningsource.com' +
+        ' ' +
+        req.body.notify;
       break;
     default:
-      notifyBody = req.body.notify + ' kyle.wheeless@learningsource.com';
+      notifyBody = 'kyle.wheeless@learningsource.com' + ' ' + req.body.notify;
       break;
   }
   let messageCombine = message + messageSignature;
@@ -175,7 +159,7 @@ exports.slackWebhook = async (req, res) => {
       to: 'kyle.wheeless@scitexas.edu', // Change to your recipient
       from: sender, // Change to your verified sender
       subject: req.body.subject,
-      cc: notifyBody,
+      cc: notify,
       bcc: studentEmails,
       html: `<p>${message}</p><br><p><img src="https://api.avernix.com/api/files/downloads/94dacf92-3a76-45ac-a007-16efaa80b622-Outlook-14n4hiys.png"> <br> <img src="https://api.avernix.com/api/files/downloads/8c694a99-82b0-4637-b304-05f10411f05c-Outlook-vic154nn.png"> <br> ${emailSignature}<br>1701 Directors Blvd <span style="color:#27ABE3">|</span>  Suite 800 <span style="color:#27ABE3">|</span>  Austin, TX 78744<br>${emailContact}</p>`,
     };

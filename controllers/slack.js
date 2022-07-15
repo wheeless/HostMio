@@ -161,7 +161,7 @@ exports.slackWebhook = async (req, res) => {
       subject: req.body.subject,
       cc: notify,
       bcc: studentEmails,
-      html: `<p>${message}</p><br><p><img src="https://api.avernix.com/api/files/downloads/94dacf92-3a76-45ac-a007-16efaa80b622-Outlook-14n4hiys.png"> <br> <img src="https://api.avernix.com/api/files/downloads/8c694a99-82b0-4637-b304-05f10411f05c-Outlook-vic154nn.png"> <br> ${emailSignature}<br>1701 Directors Blvd <span style="color:#27ABE3">|</span>  Suite 800 <span style="color:#27ABE3">|</span>  Austin, TX 78744<br>${emailContact}</p>`,
+      html: `<p>${message}</p><br><p><img src="http://cdn.mcauto-images-production.sendgrid.net/fed3c6639160b248/e9edef5a-e3b2-4130-a2a4-5159fe6d9f85/165x32.png"> <br> <img src="http://cdn.mcauto-images-production.sendgrid.net/fed3c6639160b248/f66363cb-cbe8-4c41-aca4-ccf3cf90a173/272x11.png"> <br> ${emailSignature}<br>1701 Directors Blvd <span style="color:#27ABE3">|</span>  Suite 800 <span style="color:#27ABE3">|</span>  Austin, TX 78744<br>${emailContact}</p>`,
     };
     (async () => {
       try {

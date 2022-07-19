@@ -1,6 +1,6 @@
 {
   "name": "hostmio",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
@@ -32,6 +32,7 @@
     "rotating-file-stream": "^3.0.3",
     "shortid": "^2.2.16",
     "treblle": "^1.0.2",
+    "twilio": "^3.79.0",
     "uuid": "^8.3.2",
     "valid-url": "^1.0.9",
     "vhost": "^3.0.2"

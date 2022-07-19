@@ -33,6 +33,7 @@ exports.slackWebhook = async (req, res) => {
   }
   switch (req.body.message) {
     case 'LDA':
+      subject = 'Attendance - Reminder';
       switch (req.body.daysLDA) {
         case '3':
         case '4':
@@ -56,17 +57,21 @@ exports.slackWebhook = async (req, res) => {
       }
       break;
     case 'Behind':
+      subject = 'Late Coursework - Reminder';
       message =
         'Hello there! We are reaching out regarding your coursework. We noticed you are a bit behind in your course and we are concerned as the further you fall behind, the harder it will become to get caught back up. Please make sure to be communicating with us and to be progressing in your coursework DAILY. If you are needing help please utilize your mentor, program channel and workshops found here: https://vimeo.com/thewozu/albums | if you cannot find a workshop that works for you please let a mentor know asap so we can find one that will work for your needs. Please remember, no late finals will be accepted past the Sunday night deadline unless prior arrangements have been made and approved by your Instructor/Senior Mentor, or other extenuating circumstances apply. Thanks, you got this!';
       break;
     case 'LDABehind':
+      subject = 'Late Coursework and Attendance - Reminder';
       message =
         'Hello there! We are reaching out regarding your coursework. We noticed you are a bit behind in your course and not making attendance, we are concerned as the further you fall behind, the harder it will become to get caught back up. Please make sure to be communicating with us and to be progressing in your coursework DAILY. If you are needing help please utilize your mentor, program channel and workshops found here: https://vimeo.com/thewozu/albums | if you cannot find a workshop that works for you please let a mentor know asap so we can find one that will work for your needs. Please remember, no late finals will be accepted past the Sunday night deadline unless prior arrangements have been made and approved by your Instructor/Senior Mentor, or other extenuating circumstances apply. Make sure to be spending at least 20 hours a week in your course to make attendance, if you need help setting up a coursework schedule please let your mentor know. Thanks, you got this!';
     case 'CommunicationIssues':
+      subject = 'Communication - Reminder';
       message =
         'Hello there! I hope all is well. We are reaching out regarding your communication. Communication is the key to success. We would like to touch base and see how we can be of better support to help you reach your goal. Is there a good time for us to chat?';
       break;
     case 'NoComms':
+      subject = 'We are concerned!';
       message =
         'Hello there! We are concerned about you and your success in your current course. We have not heard from you recently and would like to ensure you are okay. Please respond at your earliest convenience. We would like to see how you are and help to set a game plan to place you back on track in your course. We are here to support you and to see you reach your goals. Hope to hear from you soon! ';
       break;
@@ -158,7 +163,7 @@ exports.slackWebhook = async (req, res) => {
     const msg = {
       to: 'kyle.wheeless@scitexas.edu', // Change to your recipient
       from: sender, // Change to your verified sender
-      subject: req.body.subject,
+      subject: req.body.subject || subject,
       cc: notify,
       bcc: studentEmails,
       html: `<p>${message}</p><br><p><img src="http://cdn.mcauto-images-production.sendgrid.net/fed3c6639160b248/e9edef5a-e3b2-4130-a2a4-5159fe6d9f85/165x32.png"> <br> <img src="http://cdn.mcauto-images-production.sendgrid.net/fed3c6639160b248/f66363cb-cbe8-4c41-aca4-ccf3cf90a173/272x11.png"> <br> ${emailSignature}<br>1701 Directors Blvd <span style="color:#27ABE3">|</span>  Suite 800 <span style="color:#27ABE3">|</span>  Austin, TX 78744<br>${emailContact}</p>`,

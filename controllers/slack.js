@@ -24,7 +24,6 @@ exports.slackWebhook = async (req, res) => {
       var sender = 'kyle.wheeless@learningsource.com';
   }
   let studentEmails = req.body.email.split(' ');
-  // let message = req.body.message;
   let messageSignature = req.body.signature;
   if (messageSignature) {
     messageSignature = ' - ' + req.body.signature + ', at Learning Source';
@@ -123,65 +122,99 @@ exports.slackWebhook = async (req, res) => {
     teamMessage = '';
   }
   let messageNotify = `${teamMessage}The following students have received the message "${messageCombine}" from the Communication Bot: `;
-  let webhookArray = [
-    `${process.env.SLACK_WEBHOOK_URL}`,
-    `${process.env.SLACK_WEBHOOK_URL2}`,
-    `${process.env.SLACK_WEBHOOK_URL3}`,
-  ];
+  const msg = {
+    to: 'kyle.wheeless@scitexas.edu', // Change to your recipient
+    from: sender, // Change to your verified sender
+    subject: req.body.subject || subject,
+    cc: notify,
+    bcc: studentEmails,
+    html: `<p>${message}</p><br><p><img src="http://cdn.mcauto-images-production.sendgrid.net/fed3c6639160b248/e9edef5a-e3b2-4130-a2a4-5159fe6d9f85/165x32.png"> <br> <img src="http://cdn.mcauto-images-production.sendgrid.net/fed3c6639160b248/f66363cb-cbe8-4c41-aca4-ccf3cf90a173/272x11.png"> <br> ${emailSignature}<br>1701 Directors Blvd <span style="color:#27ABE3">|</span>  Suite 800 <span style="color:#27ABE3">|</span>  Austin, TX 78744<br>${emailContact}</p>`,
+  };
   try {
-    const uri = _.sample(webhookArray);
-    const sleep = (milliseconds) => {
-      return new Promise((resolve) => setTimeout(resolve, milliseconds));
-    };
-    let emailLoop = async (studentEmails) => {
-      for (let i = 0; i < studentEmails.length; i++) {
-        await sleep(1000);
-        response = await fetch(uri, {
-          method: 'POST',
-          body: JSON.stringify({
-            email: studentEmails[i],
-            message: messageCombine,
-          }),
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-      notifyStaff(studentEmails, notify);
-    };
-    emailLoop(studentEmails);
-    const notifyStaff = async (studentEmails, notify) => {
-      for (let i = 0; i < notify.length; i++) {
-        await fetch(uri, {
-          method: 'POST',
-          body: JSON.stringify({
-            email: notify[i],
-            message: messageNotify + studentEmails.join(', '),
-          }),
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-    };
-    const msg = {
-      to: 'kyle.wheeless@scitexas.edu', // Change to your recipient
-      from: sender, // Change to your verified sender
-      subject: req.body.subject || subject,
-      cc: notify,
-      bcc: studentEmails,
-      html: `<p>${message}</p><br><p><img src="http://cdn.mcauto-images-production.sendgrid.net/fed3c6639160b248/e9edef5a-e3b2-4130-a2a4-5159fe6d9f85/165x32.png"> <br> <img src="http://cdn.mcauto-images-production.sendgrid.net/fed3c6639160b248/f66363cb-cbe8-4c41-aca4-ccf3cf90a173/272x11.png"> <br> ${emailSignature}<br>1701 Directors Blvd <span style="color:#27ABE3">|</span>  Suite 800 <span style="color:#27ABE3">|</span>  Austin, TX 78744<br>${emailContact}</p>`,
-    };
-    (async () => {
-      try {
-        await sgMail.send(msg);
-      } catch (error) {
-        console.error(error);
+    main().then(() => {
+      console.log('Complete!');
+    });
 
-        if (error.response) {
-          console.error(error.response.body);
-        }
-      }
-    })();
+    async function main() {
+      await sendMail(msg).then(() => {
+        console.log('Emails sent!');
+      });
+      await emailLoop(studentEmails, messageCombine).then(() => {
+        console.log('Slacked Students!');
+      });
+      await notifyStaff(studentEmails, notify, messageNotify).then(() => {
+        console.log('Notified Staff!');
+      });
+    }
     return res.status(200).json('Success!');
   } catch (err) {
     console.error(err);
     res.status(500).json('Server Error');
+  }
+};
+
+const sendMail = async (msg) => {
+  try {
+    await sgMail.send(msg);
+  } catch (error) {
+    console.error(error);
+
+    if (error.response) {
+      console.error(error.response.body);
+    }
+  }
+};
+
+let webhookArray = [
+  `${process.env.SLACK_WEBHOOK_URL}`,
+  `${process.env.SLACK_WEBHOOK_URL2}`,
+  `${process.env.SLACK_WEBHOOK_URL3}`,
+];
+const uri = _.sample(webhookArray);
+
+const sleep = (milliseconds) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+let emailLoop = async (studentEmails, messageCombine) => {
+  try {
+    for (let i = 0; i < studentEmails.length; i++) {
+      await sleep(1000);
+      await fetch(uri, {
+        method: 'POST',
+        body: JSON.stringify({
+          email: studentEmails[i],
+          message: messageCombine,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    if (err.response) {
+      console.error(err.response.body);
+    }
+    return res.status(500).json('Server Error');
+  }
+};
+
+const notifyStaff = async (studentEmails, notify, messageNotify) => {
+  try {
+    for (let i = 0; i < notify.length; i++) {
+      await sleep(1000);
+      await fetch(uri, {
+        method: 'POST',
+        body: JSON.stringify({
+          email: notify[i],
+          message: messageNotify + studentEmails.join(', '),
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    if (err.response) {
+      console.error(err.response.body);
+    }
+    return res.status(500).json('Server Error');
   }
 };

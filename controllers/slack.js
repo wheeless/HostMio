@@ -103,6 +103,12 @@ exports.slackWebhook = async (req, res) => {
         ' ' +
         req.body.notify;
       break;
+    case 'CSO':
+      notifyBody =
+        'shaun.manzano@learningsource.com kyle.wheeless@learningsource.com joshua.butler@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com' +
+        ' ' +
+        req.body.notify;
+      break;
     case 'UAT':
       notifyBody =
         'kyle.wheeless@learningsource.com joshua.butler@learningsource.com' +

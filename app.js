@@ -78,6 +78,7 @@ const v1Route = require('./routes/v1Route');
 const v2Route = require('./routes/v2Route');
 const fileRoute = require('./routes/fileRoute');
 const slackRoute = require('./routes/slackRoute');
+const authRoute = require('./routes/authRoute');
 const authController = require('./controllers/auth');
 
 app.use(express.json());
@@ -168,6 +169,9 @@ app.use('/api/v2/links', cors(), v2Route);
 
 // Slack Controller (route handlers).
 app.use('/api/slack', cors(), slackRoute);
+
+// Auth Controller (route handlers).
+app.use('/api/auth', cors(), authRoute);
 
 if (env === 'development') {
   app.use(cors());

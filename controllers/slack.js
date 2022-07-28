@@ -2,6 +2,13 @@ const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
 var _ = require('lodash');
 
+const Vonage = require('@vonage/server-sdk');
+
+const vonage = new Vonage({
+  apiKey: `${process.env.VONAGE_API_KEY}`,
+  apiSecret: `${process.env.VONAGE_API_SECRET}`,
+});
+
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -24,6 +31,7 @@ exports.slackWebhook = async (req, res) => {
       var sender = 'kyle.wheeless@learningsource.com';
   }
   let studentEmails = req.body.email.split(' ');
+  let studentNumbers = req.body.numbers.split(' ');
   let messageSignature = req.body.signature;
   if (messageSignature) {
     messageSignature = ' - ' + req.body.signature + ', at Learning Source';
@@ -115,6 +123,12 @@ exports.slackWebhook = async (req, res) => {
         ' ' +
         req.body.notify;
       break;
+    case 'ALL':
+      notifyBody =
+        'shaun.manzano@learningsource.com kyle.wheeless@learningsource.com joshua.butler@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com nolan.hardeman@learningsource.com margaret.martinez@learningsource.com milton.gerardino@learningsource.com' +
+        ' ' +
+        req.body.notify;
+      break;
     default:
       notifyBody = 'kyle.wheeless@learningsource.com' + ' ' + req.body.notify;
       break;
@@ -151,8 +165,13 @@ exports.slackWebhook = async (req, res) => {
       await notifyStaff(studentEmails, notify, messageNotify).then(() => {
         console.log('Notified Staff!');
       });
+      if (req.body.sendTrue === 'true') {
+        await sendText(studentNumbers, messageCombine).then(() => {
+          console.log('Texted Students!');
+        });
+      }
+      await res.status(200).json('Shizzle was sent to studentizzles!');
     }
-    return res.status(200).json('Success!');
   } catch (err) {
     console.error(err);
     res.status(500).json('Server Error');
@@ -214,6 +233,39 @@ const notifyStaff = async (studentEmails, notify, messageNotify) => {
           message: messageNotify + studentEmails.join(', '),
         }),
         headers: { 'Content-Type': 'application/json' },
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    if (err.response) {
+      console.error(err.response.body);
+    }
+    return res.status(500).json('Server Error');
+  }
+};
+
+const sendText = async (studentNumbers, messageCombine) => {
+  try {
+    for (let i = 0; i < studentNumbers.length; i++) {
+      await sleep(1000);
+      const studentNumber = studentNumbers[i];
+      const from = `18335642712`;
+      const to = studentNumber;
+      const text = messageCombine;
+
+      vonage.message.sendSms(from, to, text, (err, responseData) => {
+        if (err) {
+          console.log(err);
+          return err;
+        } else {
+          if (responseData.messages[0]['status'] === '0') {
+            console.log('Message sent successfully.');
+          } else {
+            console.log(
+              `Message failed with error: ${responseData.messages[0]['error-text']}`
+            );
+          }
+        }
       });
     }
   } catch (err) {

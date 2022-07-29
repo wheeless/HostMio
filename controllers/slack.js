@@ -46,7 +46,7 @@ exports.slackWebhook = async (req, res) => {
         case '4':
         case '5':
         case '6':
-          message = `Hello there! We are reaching out regarding your attendance. Currently you are not meeting the  attendance policy and are ${req.body.daysLDA} days out of attendance. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!`;
+          message = `Hello there! We are reaching out regarding your attendance. Currently you are not meeting the attendance policy and are ${req.body.daysLDA} days out of attendance. To remedy this please take time to log into your course and begin progressing. To help ensure success spending a minimum of 20 hours a week in class will help you be successful in completing your course on time, with a good understanding and with a passing grade. If you have any questions, please let our education team know. Thanks, you got this!`;
           break;
         case '7':
         case '8':
@@ -171,7 +171,7 @@ exports.slackWebhook = async (req, res) => {
       await emailLoop(studentEmails, messageCombine).then(() => {
         console.log('Slacked Students!');
       });
-      await notifyStaff(studentEmails, notify, messageNotify).then(() => {
+      await notifyStaff(notify, messageNotify).then(() => {
         console.log('Notified Staff!');
       });
       if (req.body.sendTrue === 'true') {
@@ -231,7 +231,7 @@ let emailLoop = async (studentEmails, messageCombine) => {
   }
 };
 
-const notifyStaff = async (studentEmails, notify, messageNotify) => {
+const notifyStaff = async (notify, messageNotify) => {
   try {
     for (let i = 0; i < notify.length; i++) {
       await sleep(1000);

@@ -88,42 +88,49 @@ exports.slackWebhook = async (req, res) => {
   }
   switch (req.body.team) {
     case 'SWD':
+      teamName = 'Software Development';
       notifyBody =
         'kyle.wheeless@learningsource.com joshua.butler@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com' +
         ' ' +
         req.body.notify;
       break;
     case 'DSO':
+      teamName = 'Data Science';
       notifyBody =
         'nolan.hardeman@learningsource.com margaret.martinez@learningsource.com milton.gerardino@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com' +
         ' ' +
         req.body.notify;
       break;
     case 'CSO':
+      teamName = 'Cyber Security';
       notifyBody =
         'shaun.manzano@learningsource.com kyle.wheeless@learningsource.com joshua.butler@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com' +
         ' ' +
         req.body.notify;
       break;
     case 'MDO':
+      teamName = 'Mobile Development';
       notifyBody =
         'kyle.wheeless@learningsource.com joshua.butler@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com' +
         ' ' +
         req.body.notify;
       break;
     case 'CSO&SWD':
+      teamName = 'Cyber Security & Software Development';
       notifyBody =
         'shaun.manzano@learningsource.com kyle.wheeless@learningsource.com joshua.butler@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com' +
         ' ' +
         req.body.notify;
       break;
     case 'UAT':
+      teamName = 'UAT';
       notifyBody =
         'kyle.wheeless@learningsource.com joshua.butler@learningsource.com' +
         ' ' +
         req.body.notify;
       break;
     case 'ALL':
+      teamName = 'All';
       notifyBody =
         'shaun.manzano@learningsource.com kyle.wheeless@learningsource.com joshua.butler@learningsource.com ashley.kyler@learningsource.com brittney.stuart@learningsource.com nolan.hardeman@learningsource.com margaret.martinez@learningsource.com milton.gerardino@learningsource.com' +
         ' ' +
@@ -137,11 +144,13 @@ exports.slackWebhook = async (req, res) => {
   let notify = notifyBody.split(' ');
 
   if (req.body.team) {
-    teamMessage = `Hello ${req.body.team} management member! `;
+    teamMessage = `Hello ${teamName} management member(s)! `;
   } else {
     teamMessage = '';
   }
-  let messageNotify = `${teamMessage}The following students have received the message "${messageCombine}" from the Communication Bot: `;
+  let messageNotify = `${teamMessage}The following students ${studentEmails.join(
+    ', '
+  )} have received the message "${messageCombine}" from the Communication Bot.`;
   const msg = {
     to: 'kyle.wheeless@scitexas.edu', // Change to your recipient
     from: sender, // Change to your verified sender
@@ -230,7 +239,7 @@ const notifyStaff = async (studentEmails, notify, messageNotify) => {
         method: 'POST',
         body: JSON.stringify({
           email: notify[i],
-          message: messageNotify + studentEmails.join(', '),
+          message: messageNotify,
         }),
         headers: { 'Content-Type': 'application/json' },
       });
